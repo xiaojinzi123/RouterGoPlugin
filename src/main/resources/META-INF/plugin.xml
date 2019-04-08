@@ -1,11 +1,11 @@
 <idea-plugin>
-    <id>com.xiaojinzi.PluginTest</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>com.xiaojinzi.routergo</id>
+    <name>RouterGo</name>
+    <vendor email="cxj0xiaojinzi@gmail.com" url="https://github.com/xiaojinzi123/RouterGoPlugin">xiaojinzi</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    使用组件化的小伙伴在开发的时候,可以让你快速的到达Router的目标界面<br>
+    <em>RouterGo</em>
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

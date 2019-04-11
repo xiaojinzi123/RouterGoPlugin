@@ -8,23 +8,17 @@
     <em>RouterGo</em>
     ]]></description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
+    <change-notes>使用组件化的小伙伴在开发的时候,可以让你快速的到达Router的目标界面,并且后续会支持反向的查询</change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <codeInsight.lineMarkerProvider language="JAVA"
-                                        implementationClass="com.xiaojinzi.routergo.RouterGoMarkerProvider"/>
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProvider"/>
     </extensions>
 
-    <actions>
-        <!-- Add your actions here -->
-        <group id="MyPlugin.SampleMenu" text="Greeting" description="Greeting menu">
-            <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="Myplugin.Textboxes" class="HelloAction" text="Hello" description="Says hello"/>
-        </group>
-    </actions>
+    <depends>org.jetbrains.android</depends>
+    <depends>org.jetbrains.android</depends>
+    <depends>org.intellij.groovy</depends>
 </idea-plugin>

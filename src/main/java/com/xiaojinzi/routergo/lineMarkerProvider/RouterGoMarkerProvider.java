@@ -1,5 +1,6 @@
-package com.xiaojinzi.routergo;
+package com.xiaojinzi.routergo.lineMarkerProvider;
 
+import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
@@ -9,26 +10,20 @@ import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.java.PsiMethodCallExpressionImpl;
-import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.search.searches.AnnotatedElementsSearch;
-import com.intellij.psi.util.PsiUtil;
-import com.intellij.psi.xml.XmlFile;
+import com.xiaojinzi.routergo.Constants;
+import com.xiaojinzi.routergo.bean.RouterInfo;
 import com.xiaojinzi.routergo.util.PsiElementUtil;
+
+import org.jetbrains.android.dom.manifest.Application;
+import org.jetbrains.android.facet.AndroidFacet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,17 +35,17 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
 
     // 几种调用的方式
 
-    public static final String CALL_STR1 = "Router\\.with[\\S\\s]*\\.host[\\S\\s]*.path[\\S\\s]*\\.navigate[\\S\\s]*";
+    public static final String CALL_STR1 = "(" + Constants.RxRouterName + "|" + Constants.RouterName + ")[\\S\\s]*\\.with[\\S\\s]*\\.host[\\S\\s]*.path[\\S\\s]*\\.(navigate|subscribe)[\\S\\s]*";
 
     /**
      * 匹配 HOST
      */
-    public static final String CALL_STR1_HOST = "Router\\.with[\\S\\s]*\\.host\\([^)]+\\)$";
+    public static final String CALL_STR1_HOST = "(" + Constants.RxRouterName + "|" + Constants.RouterName + ")[\\S\\s]*\\.with[\\S\\s]*\\.host\\([^)]+\\)$";
 
     /**
      * 匹配 PATH
      */
-    public static final String CALL_STR1_PATH = "Router\\.with[\\S\\s]*\\.path\\([^)]+\\)$";
+    public static final String CALL_STR1_PATH = "(" + Constants.RxRouterName + "|" + Constants.RouterName + ")[\\S\\s]*\\.with[\\S\\s]*\\.path\\([^)]+\\)$";
 
     @Nullable
     @Override
@@ -66,7 +61,8 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
                     LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                             psiMethodCallExpression,
                             psiMethodCallExpression.getTextRange(),
-                            AllIcons.FileTypes.JavaClass, null, new NavigationImpl(info), GutterIconRenderer.Alignment.RIGHT
+                            AllIcons.FileTypes.JavaClass, null,
+                            new NavigationImpl(info), GutterIconRenderer.Alignment.RIGHT
                     );
                     return markerInfo;
                 }
@@ -78,13 +74,6 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
 
     @Override
     public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-        // AllIcons.FileTypes.JavaClass
-        /*for (PsiElement element : elements) {
-            final LineMarkerInfo info = doGetLineMarkerInfo(element);
-            if (info != null) {
-                result.add(info);
-            }
-        }*/
     }
 
     /**
@@ -122,6 +111,9 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
                 return psiElement instanceof PsiAnonymousClass || psiElement instanceof PsiComment;
             }
         });
+        if (info.host == null || info.path == null) {
+            return null;
+        }
         return info;
     }
 
@@ -132,12 +124,23 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
      * @param info
      */
     private void getHost(@NotNull PsiMethodCallExpression psiMethodCallExpression, @NotNull final RouterInfo info) {
-        PsiElement psiElement = psiMethodCallExpression.getChildren()[1].getChildren()[1];
-        if (psiElement instanceof PsiLiteralExpression) {
-            // 字符串表达式
-            PsiLiteralExpression psiLiteralExpression = (PsiLiteralExpression) psiElement;
-            info.host = (String) psiLiteralExpression.getValue();
+        try {
+            PsiElement psiElement = psiMethodCallExpression.getChildren()[1].getChildren()[1];
+            try {
+                info.host = (String) ((PsiLiteralExpression) ((PsiField) ((PsiReferenceExpression) psiElement).resolve()).getInitializer()).getValue();
+                return;
+            } catch (Exception ignore) {
+                // ignore
+            }
+            if (psiElement instanceof PsiLiteralExpression) {
+                // 字符串表达式
+                PsiLiteralExpression psiLiteralExpression = (PsiLiteralExpression) psiElement;
+                info.host = (String) psiLiteralExpression.getValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
         }
+
     }
 
     /**
@@ -147,37 +150,22 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
      * @param info
      */
     private void getPath(@NotNull PsiMethodCallExpression psiMethodCallExpression, @NotNull final RouterInfo info) {
-        PsiElement psiElement = psiMethodCallExpression.getChildren()[1].getChildren()[1];
-        if (psiElement instanceof PsiLiteralExpression) {
-            // 字符串表达式
-            PsiLiteralExpression psiLiteralExpression = (PsiLiteralExpression) psiElement;
-            info.path = (String) psiLiteralExpression.getValue();
-        }
-    }
-
-    //
-    @Nullable
-    private LineMarkerInfo doGetLineMarkerInfo(PsiElement element) {
-        if (element instanceof PsiIdentifier) {
-            if ("host".equals(((PsiIdentifier) element).getText())) {
-                System.out.println("123123");
+        try {
+            PsiElement psiElement = psiMethodCallExpression.getChildren()[1].getChildren()[1];
+            try {
+                info.path = (String) ((PsiLiteralExpression) ((PsiField) ((PsiReferenceExpression) psiElement).resolve()).getInitializer()).getValue();
+                return;
+            } catch (Exception ignore) {
+                // ignore
             }
+            if (psiElement instanceof PsiLiteralExpression) {
+                // 字符串表达式
+                PsiLiteralExpression psiLiteralExpression = (PsiLiteralExpression) psiElement;
+                info.path = (String) psiLiteralExpression.getValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
         }
-        if (!(element instanceof PsiMethodCallExpression)) {
-            return null;
-        }
-        final PsiMethodCallExpression psiMethodCallExpression = (PsiMethodCallExpression) element;
-        // 得到调用的语句
-        String callStr = psiMethodCallExpression.getText();
-        if (!callStr.matches(CALL_STR1)) {
-            return null;
-        }
-        LineMarkerInfo<PsiMethodCallExpression> markerInfo = new LineMarkerInfo<PsiMethodCallExpression>(
-                psiMethodCallExpression,
-                psiMethodCallExpression.getTextRange(),
-                AllIcons.FileTypes.JavaClass, null, new NavigationImpl(null), GutterIconRenderer.Alignment.RIGHT
-        );
-        return markerInfo;
     }
 
     private class NavigationImpl implements GutterIconNavigationHandler {
@@ -195,7 +183,7 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
             GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());
             // 注解类@RouterAnno(.....)
-            PsiClass serviceAnnotation = javaPsiFacade.findClass("com.xiaojinzi.component.anno.RouterAnno", allScope);
+            PsiClass serviceAnnotation = javaPsiFacade.findClass(Constants.RouterAnnoClassName, allScope);
             if (serviceAnnotation == null) {
                 return;
             }
@@ -244,11 +232,11 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
 
     private boolean isMatchHostAndPath(@NotNull RouterInfo routerInfo, @NotNull PsiAnnotation psiAnnotation) {
         List<JvmAnnotationAttribute> attributes = psiAnnotation.getAttributes();
-        String host = null,path = null;
+        String host = null, path = null;
         for (JvmAnnotationAttribute attribute : attributes) {
-            if ("host".equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
+            if (Constants.RouterAnnoHostName.equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
                 host = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
-            }else if ("path".equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
+            } else if (Constants.RouterAnnoPathName.equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
                 path = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
             }
         }
@@ -256,61 +244,41 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
         if (host == null) {
             // 找到对应的 module
             Module module = ModuleUtil.findModuleForPsiElement(psiAnnotation);
-            VirtualFile buildGradleFile = LocalFileSystem.getInstance().findFileByIoFile(new File(module.getModuleFile().getParent().getPath() + "/build.gradle"));
-            PsiFile buildGradlePsiFile = PsiManager.getInstance(module.getProject()).findFile(buildGradleFile);
-            //PsiFile[] buildGradleFiles = FilenameIndex.getFilesByName(module.getProject(), "build.gradle", module.getModuleScope());
             // 这里读取GroovyFile文件中的 host
-            // if(buildGradlePsiFile instanceof GroovyFile)
+            Application manifestApplication = AndroidFacet.getInstance(module).getManifest().getApplication();
+            if (manifestApplication.getMetaDatas() != null) {
+                List<Object> metaDatas = new ArrayList<>(manifestApplication.getMetaDatas());
+                for (Object metaData : metaDatas) {
+                    host = readHostFromMetaData(metaData);
+                    if (host != null) {
+                        break;
+                    }
+                }
+            }
         }
+
         if (host == null || path == null) {
             return false;
         }
+
         return host.equals(routerInfo.host) && path.equals(routerInfo.path);
     }
 
-    private class RouterInfo {
-
-        /**
-         * 这个路由关联的元素,
-         * 一般是一个 PsiMethodCallExpression 或者 PsiReferenceExpression
-         */
-        private PsiElement psiElement;
-
-        /**
-         * 路由的 host
-         */
-        private String host;
-
-        /**
-         * 路由的 path
-         */
-        private String path;
-
-        public PsiElement getPsiElement() {
-            return psiElement;
+    /**
+     * ((MetaData)metaDatas.get(0)).getValue().getStringValue();
+     *
+     * @param metaData
+     * @return
+     */
+    @Nullable
+    private String readHostFromMetaData(Object metaData) {
+        try {
+            Object valueObj = metaData.getClass().getDeclaredMethod("getValue").invoke(metaData);
+            String hostValue = (String) valueObj.getClass().getDeclaredMethod("getStringValue").invoke(valueObj);
+            return hostValue;
+        } catch (Exception e) {
         }
-
-        public void setPsiElement(PsiElement psiElement) {
-            this.psiElement = psiElement;
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public void setHost(String host) {
-            this.host = host;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public void setPath(String path) {
-            this.path = path;
-        }
-
+        return null;
     }
-
 
 }

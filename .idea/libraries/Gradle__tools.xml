@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: tools">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/jre/jdk/Contents/Home/lib/tools.jar!/" />
+      <root url="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/lib/tools.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,13 @@
+
+ysquid:S1488D"bImmediately return this expression instead of assigning it to the temporary variable "markerInfo".(®ô´·
+?squid:S1604y"(Make this anonymous inner class a lambda(©ú˜ð
+^squid:CallToDeprecatedMethodD"6Remove this use of "LineMarkerInfo"; it is deprecated.(®ô´·
+csquid:CommentedOutCodeLine·"<This block of commented-out lines of code should be removed.(Üé·Þ
+asquid:CommentedOutCodeLineT"<This block of commented-out lines of code should be removed.(·œ—)
+psquid:S2293D"YReplace the type specification in this constructor call with the diamond operator ("<>").(®ô´·
+:squid:S1659ì""Declare "path" on a separate line.(Î§ŠÀ
+osquid:S3776ê"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(æ€Î¯ýÿÿÿÿ
+csquid:CommentedOutCodeLineÇ"<This block of commented-out lines of code should be removed.(ª¾Œƒ
+Bsquid:S00108˜")Either remove or fill this block of code.(”ý¾
+~squid:S1488–"aImmediately return this expression instead of assigning it to the temporary variable "hostValue".(Œä¨àþÿÿÿÿ
+Dsquid:S3398ê"'Move this method into "NavigationImpl".(æ€Î¯ýÿÿÿÿ

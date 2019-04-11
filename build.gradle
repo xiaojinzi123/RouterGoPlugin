@@ -9,6 +9,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
@@ -18,10 +19,22 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.1'
+    version 'IC-191.6183.87'
+    pluginName 'RouterGo'
+    plugins 'Groovy','android','gradle'
 }
+
+group "com.xiaojinzi.routergo"
+version "0.1"
+
+publishPlugin {
+    token "perm:Y3hqMHhpYW9qaW56aQ==.eGlhb2ppbnpp.HBtAziPg95ffykKxwL0OPE4d9VWuPG"
+    channels 'dev'
+}
+
 patchPluginXml {
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
 }
+

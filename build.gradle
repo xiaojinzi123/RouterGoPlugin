@@ -19,22 +19,16 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version 'IC-191.6183.87'
+    version 'IC-191.5109.14'
     pluginName 'RouterGo'
     plugins 'Groovy','android','gradle'
 }
 
 group "com.xiaojinzi.routergo"
-version "0.1"
+version "1.0"
 
 publishPlugin {
     token "perm:Y3hqMHhpYW9qaW56aQ==.eGlhb2ppbnpp.HBtAziPg95ffykKxwL0OPE4d9VWuPG"
     channels 'dev'
-}
-
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
 }
 

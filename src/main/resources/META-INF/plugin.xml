@@ -15,6 +15,10 @@
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorUsageLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProvider"/>
     </extensions>
 

@@ -1,6 +1,9 @@
 package com.xiaojinzi.routergo.bean;
 
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class InterceptorInfo {
 
@@ -13,6 +16,7 @@ public class InterceptorInfo {
     /**
      * 拦截器的名称
      */
-    public String interceptorName;
+    @Nullable
+    public List<String> interceptorNames;
 
 }

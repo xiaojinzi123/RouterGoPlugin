@@ -17,6 +17,7 @@ import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.search.searches.MethodReferencesSearch;
 import com.intellij.ui.awt.RelativePoint;
 import com.xiaojinzi.routergo.Constants;
+import com.xiaojinzi.routergo.bean.InterceptorAnnoInfo;
 import com.xiaojinzi.routergo.bean.InterceptorInfo;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             if (interceptorAnno == null) {
                 return null;
             }
-            InterceptorInfo info = getInterceptorInfoFromAnno(interceptorAnno);
+            InterceptorAnnoInfo info = getInterceptorInfoFromAnno(interceptorAnno);
             if (info != null) {
                 info.psiElement = interceptorAnno;
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
@@ -62,8 +63,8 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
     }
 
     @Nullable
-    private InterceptorInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
-        InterceptorInfo interceptorInfo = new InterceptorInfo();
+    private InterceptorAnnoInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
+        InterceptorAnnoInfo interceptorInfo = new InterceptorAnnoInfo();
         try {
             JvmAnnotationAttributeValue hostAttributeValue = interceptorAnno.findAttribute(Constants.InterceptorAnnoValueName).getAttributeValue();
             if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
@@ -81,10 +82,10 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
     private class NavigationImpl implements GutterIconNavigationHandler {
 
         @NotNull
-        private InterceptorInfo info;
+        private InterceptorAnnoInfo interceptorAnnoInfo;
 
-        public NavigationImpl(@NotNull InterceptorInfo info) {
-            this.info = info;
+        public NavigationImpl(@NotNull InterceptorAnnoInfo info) {
+            this.interceptorAnnoInfo = info;
         }
 
         @Override
@@ -95,7 +96,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             PsiClass routerBuilderClass = javaPsiFacade.findClass(Constants.RouterBuilderClassName, allScope);
             PsiClass rxRouterBuilderClass = javaPsiFacade.findClass(Constants.RxRouterBuilderClassName, allScope);
 
-            // 所有的引用都会在这里
+            // 所有方法的引用都会在这里
             List<PsiReference> referenceMethodList = new ArrayList<>();
             // 所有使用 RouterAnno 注解中的 interceptorNames 属性方法的
             List<PsiReference> referenceAnnoMethodList = new ArrayList<>();
@@ -109,6 +110,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             PsiAnnotationMethod psiAnnotationMethod = (PsiAnnotationMethod) routerAnnoBuilderClass.findMethodsByName(Constants.RouterAnnoInterceptorName)[0];
             referenceAnnoMethodList.addAll(MethodReferencesSearch.search(psiAnnotationMethod).findAll());
 
+            // 过滤后的结果
             List<PsiReferenceExpression> referenceExpressionList = new ArrayList<>();
             List<PsiNameValuePair> nameValuePairList = new ArrayList<>();
 
@@ -118,14 +120,16 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
                     referenceExpressionList.add((PsiReferenceExpression) psiReference);
                 }
             }
+            // 过滤一下不是注解中使用到的
             for (PsiReference psiReference : referenceAnnoMethodList) {
-                if (psiReference instanceof PsiNameValuePair) {
-                    nameValuePairList.add((PsiNameValuePair) psiReference);
+                if (psiReference.getElement() != null && psiReference.getElement().getParent() instanceof PsiNameValuePair) {
+                    nameValuePairList.add((PsiNameValuePair) psiReference.getElement().getParent());
                 }
             }
             referenceMethodList = null;
             referenceAnnoMethodList = null;
 
+            // 生成最终的引用列表
             Set<InterceptorInfo> referenceExpressionListResultSet = new HashSet<>();
 
             for (PsiReferenceExpression psiReferenceExpression : referenceExpressionList) {
@@ -136,12 +140,27 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
                 }
             }
 
+            for (PsiNameValuePair psiNameValuePair : nameValuePairList) {
+                InterceptorInfo interceptorInfo = getInterceptorInfoFromPsiNameValuePair(psiNameValuePair);
+                if (interceptorInfo != null) {
+                    interceptorInfo.psiElement = psiNameValuePair;
+                    referenceExpressionListResultSet.add(interceptorInfo);
+                }
+            }
+
+            // 最终和传进来的 InterceptorInfo 名称匹配到
             List<InterceptorInfo> referenceExpressionListResultList = new ArrayList<>(referenceExpressionListResultSet);
 
             for (int i = referenceExpressionListResultList.size() - 1; i >= 0; i--) {
                 InterceptorInfo interceptorInfo = referenceExpressionListResultList.get(i);
-                if (info.interceptorName.equals(interceptorInfo.interceptorName)) {
-                } else {
+                boolean isExistOne = false;
+                for (String interceptorName : interceptorInfo.interceptorNames) {
+                    if (interceptorAnnoInfo.interceptorName.equals(interceptorName)) {
+                        isExistOne = true;
+                        break;
+                    }
+                }
+                if (!isExistOne) {
                     referenceExpressionListResultList.remove(i);
                 }
             }
@@ -170,8 +189,8 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
     @Nullable
     private InterceptorInfo getInterceptorInfoFromPsiReferenceExpression(@NotNull PsiReferenceExpression psiReferenceExpression) {
         InterceptorInfo interceptorInfo = new InterceptorInfo();
-        interceptorInfo.interceptorName = Util.getInterceptorName(psiReferenceExpression);
-        if (interceptorInfo.interceptorName == null) {
+        interceptorInfo.interceptorNames = Util.getInterceptorNames(psiReferenceExpression);
+        if (interceptorInfo.interceptorNames == null) {
             return null;
         }
         return interceptorInfo;
@@ -179,22 +198,31 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
 
     @Nullable
     private InterceptorInfo getInterceptorInfoFromPsiNameValuePair(@NotNull PsiNameValuePair PsiNameValuePair) {
-
-        /*PsiArrayInitializerMemberValue psiArrayInitializerMemberValue;
-
-        for (PsiAnnotationMemberValue psiAnnotationMemberValue : psiArrayInitializerMemberValue.getInitializers()) {
-
-        }*/
-
-        /*InterceptorInfo interceptorInfo = new InterceptorInfo();
-        interceptorInfo.interceptorName = Util.getInterceptorName(psiReferenceExpression);
-        if (interceptorInfo.interceptorName == null) {
+        InterceptorInfo interceptorInfo = new InterceptorInfo();
+        // 一个 RouterAnno 注解中的 interceptorNames 中的拦截器的名称列表
+        List<String> interceptorNames = new ArrayList<String>();
+        PsiElement lastChild = PsiNameValuePair.getLastChild();
+        if (lastChild instanceof PsiArrayInitializerMemberValue) {
+            PsiArrayInitializerMemberValue initializerMemberValue = (PsiArrayInitializerMemberValue) lastChild;
+            for (PsiAnnotationMemberValue initializer : initializerMemberValue.getInitializers()) {
+                String name = Util.getStringValue(initializer);
+                if (name != null) {
+                    interceptorNames.add(name);
+                }
+            }
+        } else if (lastChild != null) {
+            String name = Util.getStringValue(lastChild);
+            if (name != null) {
+                interceptorNames.add(name);
+            }
+        }
+        if (interceptorNames.size() > 0) {
+            interceptorInfo.interceptorNames = interceptorNames;
+        }
+        if (interceptorInfo.interceptorNames == null) {
             return null;
         }
-        return interceptorInfo;*/
-
-        return null;
-
+        return interceptorInfo;
     }
 
 }

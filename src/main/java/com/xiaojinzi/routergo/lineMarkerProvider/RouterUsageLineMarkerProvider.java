@@ -17,8 +17,11 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.search.searches.MethodReferencesSearch;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.usages.Usage;
+import com.intellij.usages.UsageSearcher;
 import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.bean.InterceptorInfo;
+import com.xiaojinzi.routergo.bean.InterceptorNavagationInfo;
 import com.xiaojinzi.routergo.bean.RouterInfo;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
@@ -39,9 +42,9 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
     @Nullable
     @Override
     public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
-        if (element instanceof PsiClass) {
-            PsiClass psiClass = (PsiClass) element;
-            PsiAnnotation routerAnno = psiClass.getAnnotation(Constants.RouterAnnoClassName);
+        if (element instanceof PsiClass || element instanceof PsiMethod) {
+            PsiModifierListOwner psiModifierListOwner = (PsiModifierListOwner) element;
+            PsiAnnotation routerAnno = psiModifierListOwner.getAnnotation(Constants.RouterAnnoClassName);
             if (routerAnno == null) {
                 return null;
             }
@@ -56,12 +59,12 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
                 );
                 return markerInfo;
             }
-        } else if (element instanceof PsiReferenceExpression &&
+        } else if ((element instanceof PsiReferenceExpression || element instanceof PsiLiteralExpression) &&
                 element.getParent() instanceof PsiNameValuePair &&
                 element.getParent().getChildren()[0] instanceof PsiIdentifier &&
                 "interceptorNames".equals(element.getParent().getChildren()[0].getText())) {
             return getInterceptorLineMarkerInfo(element);
-        }else if (element instanceof PsiReferenceExpression &&
+        }else if ((element instanceof PsiReferenceExpression || element instanceof PsiLiteralExpression) &&
                 element.getParent() instanceof PsiArrayInitializerMemberValue &&
                 element.getParent().getParent() instanceof PsiNameValuePair &&
                 element.getParent().getParent().getChildren()[0] instanceof PsiIdentifier &&
@@ -73,17 +76,17 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
 
     @Nullable
     private LineMarkerInfo getInterceptorLineMarkerInfo (@NotNull PsiElement element) {
-        InterceptorInfo interceptorInfo = new InterceptorInfo();
-        interceptorInfo.interceptorName = Util.getStringValue(element);
-        interceptorInfo.psiElement = element;
-        if (interceptorInfo.interceptorName == null) {
+        InterceptorNavagationInfo interceptorNavagationInfo = new InterceptorNavagationInfo();
+        interceptorNavagationInfo.interceptorName = Util.getStringValue(element);
+        interceptorNavagationInfo.psiElement = element;
+        if (interceptorNavagationInfo.interceptorName == null) {
             return null;
         }
         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                 element,
                 element.getTextRange(),
                 interceptorLink, null,
-                new InterceptorGoLineMarkerProvider.NavigationImpl(interceptorInfo), GutterIconRenderer.Alignment.RIGHT
+                new InterceptorGoLineMarkerProvider.NavigationImpl(interceptorNavagationInfo), GutterIconRenderer.Alignment.RIGHT
         );
         return markerInfo;
     }
@@ -147,7 +150,6 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
             referenceList.addAll(MethodReferencesSearch.search(psiMethodRxRouter).findAll());
 
             List<PsiReferenceExpression> referenceExpressionList = new ArrayList<>();
-
             // 过滤一下不是 PsiReferenceExpress
             for (PsiReference psiReference : referenceList) {
                 if (psiReference instanceof PsiReferenceExpression) {
@@ -155,9 +157,7 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
                 }
             }
             referenceList = null;
-
             Set<RouterInfo> referenceExpressionListResultSet = new HashSet<>();
-
             for (PsiReferenceExpression psiReferenceExpression : referenceExpressionList) {
                 RouterInfo routerInfo = getRouterInfoFromPsiReferenceExpression(psiReferenceExpression);
                 if (routerInfo != null) {
@@ -167,7 +167,6 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
             }
 
             List<RouterInfo> referenceExpressionListResultList = new ArrayList<>(referenceExpressionListResultSet);
-
             // 过滤 host 和 path 不一样的
             for (int i = referenceExpressionListResultList.size() - 1; i >= 0; i--) {
                 RouterInfo routerInfo = referenceExpressionListResultList.get(i);
@@ -176,7 +175,6 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
                     referenceExpressionListResultList.remove(i);
                 }
             }
-
             if (referenceExpressionListResultList.size() == 1) {
                 PsiElement targetPsiElement = referenceExpressionListResultList.get(0).psiElement;
                 if (targetPsiElement instanceof Navigatable && ((Navigatable) targetPsiElement).canNavigate()) {

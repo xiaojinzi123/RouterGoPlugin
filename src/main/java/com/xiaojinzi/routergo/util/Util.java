@@ -118,10 +118,24 @@ public class Util {
         return null;
     }
 
-    public static String getInterceptorName(@NotNull PsiReferenceExpression psiReferenceExpression) {
+    /**
+     * 获取 Router.with().host().path().interceptorNames("xxx","ccc"); 中的拦截器名称的列表
+     * @param psiReferenceExpression
+     * @return
+     */
+    @Nullable
+    public static List<String> getInterceptorNames(@NotNull PsiReferenceExpression psiReferenceExpression) {
         try {
-            PsiElement psiInterceptorNameElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
-            return getStringValue(psiInterceptorNameElement);
+            List<String> interceptorNames = new ArrayList<>();
+            PsiExpressionList psiExpressionList = (PsiExpressionList) psiReferenceExpression.getParent().getChildren()[1];
+            for (PsiExpression psiExpression : psiExpressionList.getExpressions()) {
+                interceptorNames.add(getStringValue(psiExpression));
+            }
+            if (interceptorNames.size() == 0) {
+                return null;
+            }else {
+                return interceptorNames;
+            }
         } catch (Exception ignore) {
             // ignore
         }

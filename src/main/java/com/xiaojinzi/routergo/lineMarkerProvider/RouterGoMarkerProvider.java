@@ -32,7 +32,7 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
     private static PsiMethod routerRequestHostMethod = null;
     private static PsiMethod routerHostMethod = null;
     private static PsiMethod rxRouterHostMethod = null;
-    private static Icon routerLink = IconLoader.getIcon("router_link.png");
+    private static Icon routerLink = IconLoader.getIcon("logo.png");
 
 
     @Nullable

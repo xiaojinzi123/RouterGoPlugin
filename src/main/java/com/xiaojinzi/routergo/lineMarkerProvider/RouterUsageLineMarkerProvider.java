@@ -36,7 +36,7 @@ import java.util.*;
  */
 public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
 
-    private static Icon routerLink = IconLoader.getIcon("router_link.png");
+    private static Icon routerLink = IconLoader.getIcon("logo.png");
     private static Icon interceptorLink = IconLoader.getIcon("interceptor_link.png");
 
     @Nullable

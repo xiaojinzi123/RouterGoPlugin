@@ -9,7 +9,7 @@ public class Constants {
     public static String RouterAnnoClassName = "com.xiaojinzi.component.anno.RouterAnno";
     public static String RouterClassName = "com.xiaojinzi.component.impl.Router";
     public static String RouterRequestBuilderClassName = "com.xiaojinzi.component.impl.RouterRequest.Builder";
-    public static String RouterBuilderClassName = "com.xiaojinzi.component.impl.Router.Builder";
+    public static String RouterBuilderClassName = "com.xiaojinzi.component.impl.Navigator";
     public static String RxRouterBuilderClassName = "com.xiaojinzi.component.impl.RxRouter.Builder";
     public static String RxRouterClassName = "com.xiaojinzi.component.impl.RxRouter";
     public static String RouterHostMethodName = "host";

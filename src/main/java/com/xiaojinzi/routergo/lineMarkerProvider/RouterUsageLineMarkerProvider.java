@@ -98,6 +98,7 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
     @Nullable
     private RouterInfo getRouterInfoFromAnno(@NotNull PsiAnnotation routerAnno) {
         RouterInfo routerInfo = new RouterInfo();
+        String hostAndPath = null;
         try {
             JvmAnnotationAttributeValue hostAttributeValue = routerAnno.findAttribute(Constants.RouterAnnoHostName).getAttributeValue();
             if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
@@ -114,10 +115,19 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
         } catch (Exception ignore) {
             // ignore
         }
+        try {
+            JvmAnnotationAttributeValue pathAttributeValue = routerAnno.findAttribute(Constants.RouterAnnoHostAndPathName).getAttributeValue();
+            if (pathAttributeValue instanceof JvmAnnotationConstantValue) {
+                hostAndPath = (String) ((JvmAnnotationConstantValue) pathAttributeValue).getConstantValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
+        }
         // 可能是默认值
         if (routerInfo.host == null) {
             routerInfo.host = Util.getHostFromRouterAnno(routerAnno);
         }
+        routerInfo.setHostAndPath(hostAndPath);
         if (routerInfo.host == null || routerInfo.path == null) {
             return null;
         }
@@ -137,17 +147,19 @@ public class RouterUsageLineMarkerProvider implements LineMarkerProvider {
         public void navigate(MouseEvent e, PsiElement elt) {
             GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());
+
             // 注解类@RouterAnno(.....)
             PsiClass routerRequestBuilderClass = javaPsiFacade.findClass(Constants.RouterRequestBuilderClassName, allScope);
 
-            // 所有的引用都会在这里
+            // 会找到所有的 RouterRequest.Builder.host方法的引用都会在这里
             List<PsiReference> referenceList = new ArrayList<>();
 
-            PsiMethod psiMethodRouter = (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostMethodName)[0];
-            referenceList.addAll(MethodReferencesSearch.search(psiMethodRouter).findAll());
+            //
+            PsiMethod psiHostMethodRouter = (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostMethodName)[0];
+            referenceList.addAll(MethodReferencesSearch.search(psiHostMethodRouter).findAll());
 
-            PsiMethod psiMethodRxRouter = (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostMethodName)[0];
-            referenceList.addAll(MethodReferencesSearch.search(psiMethodRxRouter).findAll());
+            /*PsiMethod psiMethodRxRouter = (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostMethodName)[0];
+            referenceList.addAll(MethodReferencesSearch.search(psiMethodRxRouter).findAll());*/
 
             List<PsiReferenceExpression> referenceExpressionList = new ArrayList<>();
             // 过滤一下不是 PsiReferenceExpress

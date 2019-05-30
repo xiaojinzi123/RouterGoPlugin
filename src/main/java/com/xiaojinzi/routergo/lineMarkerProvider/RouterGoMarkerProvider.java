@@ -1,6 +1,5 @@
 package com.xiaojinzi.routergo.lineMarkerProvider;
 
-import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
@@ -32,6 +31,11 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
     private static PsiMethod routerRequestHostMethod = null;
     private static PsiMethod routerHostMethod = null;
     private static PsiMethod rxRouterHostMethod = null;
+
+    private static PsiMethod routerRequestHostAndPathMethod = null;
+    private static PsiMethod routerHostAndPathMethod = null;
+    private static PsiMethod rxRouterHostAndPathMethod = null;
+
     private static Icon routerLink = IconLoader.getIcon("logo.png");
 
 
@@ -49,26 +53,38 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
             rxRouterHostMethod = Util.getRxRouterHostMethod(element.getProject());
         }
 
+        if (routerRequestHostAndPathMethod == null) {
+            routerRequestHostAndPathMethod = Util.getRouterRequestHostAndPathMethod(element.getProject());
+        }
+        if (routerHostAndPathMethod == null) {
+            routerHostAndPathMethod = Util.getRouterHostAndPathMethod(element.getProject());
+        }
+        if (rxRouterHostAndPathMethod == null) {
+            rxRouterHostAndPathMethod = Util.getRxRouterHostAndPathMethod(element.getProject());
+        }
+
         if (element instanceof PsiReferenceExpression) {
             PsiReferenceExpression psiReferenceExpression = (PsiReferenceExpression) element;
             PsiElement targetPsiElement = psiReferenceExpression.resolve();
             if (targetPsiElement instanceof PsiMethod) {
                 PsiMethod targetPsiMethod = (PsiMethod) targetPsiElement;
-                if (targetPsiMethod.equals(routerRequestHostMethod) ||
+                boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
                         targetPsiMethod.equals(routerHostMethod) ||
-                        targetPsiMethod.equals(rxRouterHostMethod)) {
-
+                        targetPsiMethod.equals(rxRouterHostMethod);
+                boolean isHostAndPathMethod = targetPsiMethod.equals(routerRequestHostAndPathMethod) ||
+                        targetPsiMethod.equals(routerHostAndPathMethod) ||
+                        targetPsiMethod.equals(rxRouterHostAndPathMethod);
+                if (isHostMethod || isHostAndPathMethod) {
                     final RouterInfo info = getRouterInfo(psiReferenceExpression);
                     if (info != null) {
                         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                                 psiReferenceExpression,
                                 psiReferenceExpression.getTextRange(),
-                                routerLink,null,
+                                routerLink, null,
                                 new NavigationImpl(info), GutterIconRenderer.Alignment.RIGHT
                         );
                         return markerInfo;
                     }
-
                 }
             }
         }
@@ -85,6 +101,7 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
      *
      * @return
      */
+    @Nullable
     private RouterInfo getRouterInfo(@NotNull PsiReferenceExpression psiReferenceExpression) {
         final RouterInfo info = new RouterInfo();
         Util.getHostAndPath(psiReferenceExpression, info);
@@ -125,7 +142,7 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
                     psiClassRouterActivity.navigate(true);
                 }*/
             for (PsiClass routerClass : routerActivities) {
-                // 静态方法上的注解
+                // Activity上的注解
                 PsiAnnotation routerClassAnnotation = routerClass.getAnnotation(serviceAnnotation.getQualifiedName());
                 if (routerClassAnnotation != null) {
                     psiAnnotationList.add(routerClassAnnotation);
@@ -156,25 +173,36 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
         }
     }
 
+    /**
+     * 是否匹配 host 和 path
+     *
+     * @param routerInfo
+     * @param psiAnnotation
+     * @return
+     */
     private boolean isMatchHostAndPath(@NotNull RouterInfo routerInfo, @NotNull PsiAnnotation psiAnnotation) {
         List<JvmAnnotationAttribute> attributes = psiAnnotation.getAttributes();
-        String host = null, path = null;
+        RouterInfo routerInfoTarget = new RouterInfo();
+        String hostAndPath = null;
         for (JvmAnnotationAttribute attribute : attributes) {
             if (Constants.RouterAnnoHostName.equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
-                host = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
+                routerInfoTarget.host = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
             } else if (Constants.RouterAnnoPathName.equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
-                path = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
+                routerInfoTarget.path = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
+            } else if (Constants.RouterAnnoHostAndPathName.equals(attribute.getAttributeName()) && attribute.getAttributeValue() instanceof JvmAnnotationConstantValue) {
+                hostAndPath = (String) ((JvmAnnotationConstantValue) attribute.getAttributeValue()).getConstantValue();
             }
         }
         // 可能是默认值
-        if (host == null) {
-            host = Util.getHostFromRouterAnno(psiAnnotation);
+        if (routerInfoTarget.host == null) {
+            routerInfoTarget.host = Util.getHostFromRouterAnno(psiAnnotation);
         }
-        if (host == null || path == null) {
+        routerInfoTarget.setHostAndPath(hostAndPath);
+
+        if (routerInfoTarget.host == null || routerInfoTarget.path == null) {
             return false;
         }
-
-        return host.equals(routerInfo.host) && path.equals(routerInfo.path);
+        return routerInfoTarget.equals(routerInfo);
     }
 
 

@@ -18,20 +18,25 @@ import java.util.List;
 
 public class Util {
 
+    @Nullable
     public static String getHostFromRouterAnno(@NotNull PsiElement psiAnnotation) {
         String host = null;
-        // 找到对应的 module
-        Module module = ModuleUtil.findModuleForPsiElement(psiAnnotation);
-        // 这里读取GroovyFile文件中的 host
-        Application manifestApplication = AndroidFacet.getInstance(module).getManifest().getApplication();
-        if (manifestApplication.getMetaDatas() != null) {
-            List<Object> metaDatas = new ArrayList<>(manifestApplication.getMetaDatas());
-            for (Object metaData : metaDatas) {
-                host = readHostFromMetaData(metaData);
-                if (host != null) {
-                    break;
+        try {
+            // 找到对应的 module
+            Module module = ModuleUtil.findModuleForPsiElement(psiAnnotation);
+            // 这里读取GroovyFile文件中的 host
+            Application manifestApplication = AndroidFacet.getInstance(module).getManifest().getApplication();
+            if (manifestApplication.getMetaDatas() != null) {
+                List<Object> metaDatas = new ArrayList<>(manifestApplication.getMetaDatas());
+                for (Object metaData : metaDatas) {
+                    host = readHostFromMetaData(metaData);
+                    if (host != null) {
+                        break;
+                    }
                 }
             }
+        } catch (Exception ignore) {
+            // ignore
         }
         return host;
     }
@@ -67,6 +72,19 @@ public class Util {
     }
 
     @Nullable
+    public static PsiMethod getRouterRequestHostAndPathMethod(@NotNull Project project) {
+        try {
+            GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+            JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+            // 注解类@RouterAnno(.....)
+            PsiClass routerRequestBuilderClass = javaPsiFacade.findClass(Constants.RouterRequestBuilderClassName, allScope);
+            return (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostAndPathMethodName)[0];
+        } catch (Exception ignore) {
+        }
+        return null;
+    }
+
+    @Nullable
     public static PsiMethod getRouterHostMethod(@NotNull Project project) {
         try {
             GlobalSearchScope allScope = ProjectScope.getAllScope(project);
@@ -80,6 +98,19 @@ public class Util {
     }
 
     @Nullable
+    public static PsiMethod getRouterHostAndPathMethod(@NotNull Project project) {
+        try {
+            GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+            JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+            // 注解类@RouterAnno(.....)
+            PsiClass routerRequestBuilderClass = javaPsiFacade.findClass(Constants.RouterBuilderClassName, allScope);
+            return (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostAndPathMethodName)[0];
+        } catch (Exception ignore) {
+        }
+        return null;
+    }
+
+    @Nullable
     public static PsiMethod getRxRouterHostMethod(@NotNull Project project) {
         try {
             GlobalSearchScope allScope = ProjectScope.getAllScope(project);
@@ -87,6 +118,19 @@ public class Util {
             // 注解类@RouterAnno(.....)
             PsiClass routerRequestBuilderClass = javaPsiFacade.findClass(Constants.RxRouterBuilderClassName, allScope);
             return (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostMethodName)[0];
+        } catch (Exception ignore) {
+        }
+        return null;
+    }
+
+    @Nullable
+    public static PsiMethod getRxRouterHostAndPathMethod(@NotNull Project project) {
+        try {
+            GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+            JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+            // 注解类@RouterAnno(.....)
+            PsiClass routerRequestBuilderClass = javaPsiFacade.findClass(Constants.RxRouterBuilderClassName, allScope);
+            return (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostAndPathMethodName)[0];
         } catch (Exception ignore) {
         }
         return null;
@@ -120,6 +164,7 @@ public class Util {
 
     /**
      * 获取 Router.with().host().path().interceptorNames("xxx","ccc"); 中的拦截器名称的列表
+     *
      * @param psiReferenceExpression
      * @return
      */
@@ -133,7 +178,7 @@ public class Util {
             }
             if (interceptorNames.size() == 0) {
                 return null;
-            }else {
+            } else {
                 return interceptorNames;
             }
         } catch (Exception ignore) {
@@ -143,12 +188,13 @@ public class Util {
     }
 
     /**
-     * .....host("order") 中拿到 "order" 字符串
+     * .....host("order") 中拿到 "order" 字符串 也支持 hostAndPath 方法
      *
      * @param psiReferenceExpression
      * @param info
      */
     public static void getHostAndPath(@NotNull PsiReferenceExpression psiReferenceExpression, @NotNull final RouterInfo info) {
+        // 尝试获取 host() 和 path() 方法写的参数
         try {
             PsiElement psiHostElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
             PsiElement psiPathElement = psiReferenceExpression.getParent().getParent().getParent().getChildren()[1].getChildren()[1];
@@ -157,6 +203,17 @@ public class Util {
         } catch (Exception ignore) {
             // ignore
         }
+
+        // 尝试获取 hostAndPath
+        try {
+            if (psiReferenceExpression.getLastChild() instanceof PsiIdentifier && Constants.RouterHostAndPathMethodName.equals(psiReferenceExpression.getLastChild().getText())) {
+                PsiElement psiHostAndPathElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
+                info.setHostAndPath(getStringValue(psiHostAndPathElement));
+            }
+        } catch (Exception ignore) {
+            // ignore
+        }
+
     }
 
     /**
@@ -165,19 +222,28 @@ public class Util {
      * @param psiElement
      * @return
      */
+    @Nullable
     public static String getStringValue(@NotNull PsiElement psiElement) {
         String value = null;
-        try {
-            value = (String) ((PsiLiteralExpression) ((PsiField) ((PsiReferenceExpression) psiElement).resolve()).getInitializer()).getValue();
-            return value;
-        } catch (Exception ignore) {
-            // ignore
-        }
-        if (psiElement instanceof PsiLiteralExpression) {
+        if (psiElement instanceof PsiReferenceExpression) {
+            try {
+                value = (String) ((PsiLiteralExpression) ((PsiField) ((PsiReferenceExpression) psiElement).resolve()).getInitializer()).getValue();
+                return value;
+            } catch (Exception ignore) {
+                // ignore
+            }
+        } else if (psiElement instanceof PsiLiteralExpression) {
             // 字符串表达式
             PsiLiteralExpression psiLiteralExpression = (PsiLiteralExpression) psiElement;
             value = (String) psiLiteralExpression.getValue();
             return value;
+        } else if (psiElement instanceof PsiPolyadicExpression) {
+            PsiExpression[] operands = ((PsiPolyadicExpression) psiElement).getOperands();
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < operands.length; i++) {
+                sb.append(getStringValue(operands[i]));
+            }
+            value = sb.toString();
         }
         return value;
     }

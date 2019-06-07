@@ -10,4 +10,5 @@
 ### 手动下载
 [点我下载插件](https://github.com/xiaojinzi123/RouterGoPlugin/releases)
 
-### 在 `AndroidStudio` 中搜索插件 `RouterGo` 就可以搜索到,下载安装即可
+### AndroidStudio中下载安装
+在 `AndroidStudio` 中搜索插件 `RouterGo` 就可以搜索到,下载安装即可

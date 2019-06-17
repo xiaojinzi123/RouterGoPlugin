@@ -10,12 +10,17 @@
     ]]>
     </description>
 
-    <change-notes>
-    v1.1.1
-        optimize code
-    v1.1
-        1.The logo was updated
-        2.The implementation code was updated after "https://github.com/xiaojinzi123/Component" published
+    <change-notes><![CDATA[
+    <b>v1.1.1</b>
+    <ul>
+        <li> optimize code </li>
+    </ul>
+    <b>v1.1</b>
+    <ul>
+        <li> The logo was updated </li>
+        <li> The implementation code was updated after "https://github.com/xiaojinzi123/Component" published </li>
+    </ul>
+    ]]>
     </change-notes>
 
     <version>1.1.1</version>

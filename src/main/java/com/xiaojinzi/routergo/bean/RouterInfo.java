@@ -1,15 +1,8 @@
 package com.xiaojinzi.routergo.bean;
 
-import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
 public class RouterInfo {
-
-    /**
-     * 这个路由关联的元素,
-     * 一般是一个 PsiMethodCallExpression 或者 PsiReferenceExpression
-     */
-    public PsiElement psiElement;
 
     /**
      * 路由的 host
@@ -39,11 +32,10 @@ public class RouterInfo {
         RouterInfo target = (RouterInfo) obj;
         if (
                 ((host == null && target.host == null) || host.equals(target.host)) &&
-                ((path == null && target.path == null) || path.equals(target.path)) &&
-                ((psiElement == null && target.psiElement == null) || psiElement.equals(target.psiElement))
+                        ((path == null && target.path == null) || path.equals(target.path))
         ) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -51,9 +43,12 @@ public class RouterInfo {
     @Override
     public int hashCode() {
         return
-                (psiElement == null?0:psiElement.hashCode()) +
-                (host == null?0:host.hashCode()) +
-                (path == null?0:path.hashCode());
+                (host == null ? 0 : host.hashCode()) +
+                        (path == null ? 0 : path.hashCode());
+    }
+
+    public boolean isValid() {
+        return host != null && path != null;
     }
 
 }

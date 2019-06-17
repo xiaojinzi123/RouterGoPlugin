@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.7'
+    id 'org.jetbrains.intellij' version '0.4.9'
 }
 
 group 'com.xiaojinzi'
@@ -25,10 +25,9 @@ intellij {
 }
 
 group "com.xiaojinzi.routergo"
-version "1.0"
+version "1.1.1"
 
 publishPlugin {
-    token "perm:Y3hqMHhpYW9qaW56aQ==.eGlhb2ppbnpp.HBtAziPg95ffykKxwL0OPE4d9VWuPG"
-    channels 'dev'
+    token "perm:Y3hqMHhpYW9qaW56aQ==.eGlhb2ppbnpp.0pWMo0igtSrkqvxzPl4MlXm6HO2c0i"
 }
 

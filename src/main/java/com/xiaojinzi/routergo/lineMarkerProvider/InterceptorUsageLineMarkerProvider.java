@@ -43,14 +43,15 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             if (interceptorAnno == null) {
                 return null;
             }
+            // 如果有这个参数
             InterceptorAnnoInfo info = getInterceptorInfoFromAnno(interceptorAnno);
             if (info != null) {
-                info.psiElement = interceptorAnno;
+                PsiElement targetPsiElement = interceptorAnno;
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                        info.psiElement,
-                        info.psiElement.getTextRange(),
+                        targetPsiElement,
+                        targetPsiElement.getTextRange(),
                         interceptorLink, null,
-                        new NavigationImpl(info), GutterIconRenderer.Alignment.RIGHT
+                        new NavigationImpl(interceptorAnno), GutterIconRenderer.Alignment.RIGHT
                 );
                 return markerInfo;
             }
@@ -64,32 +65,38 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
 
     @Nullable
     private InterceptorAnnoInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
-        InterceptorAnnoInfo interceptorInfo = new InterceptorAnnoInfo();
+        String interceptorName = null;
         try {
             JvmAnnotationAttributeValue hostAttributeValue = interceptorAnno.findAttribute(Constants.InterceptorAnnoValueName).getAttributeValue();
             if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
-                interceptorInfo.interceptorName = (String) ((JvmAnnotationConstantValue) hostAttributeValue).getConstantValue();
+                interceptorName = (String) ((JvmAnnotationConstantValue) hostAttributeValue).getConstantValue();
             }
         } catch (Exception ignore) {
             // ignore
         }
-        if (interceptorInfo.interceptorName == null) {
+        if (interceptorName == null) {
             return null;
         }
-        return interceptorInfo;
+        return new InterceptorAnnoInfo(interceptorName);
     }
 
     private class NavigationImpl implements GutterIconNavigationHandler {
 
         @NotNull
-        private InterceptorAnnoInfo interceptorAnnoInfo;
+        private PsiAnnotation interceptorAnno;
 
-        public NavigationImpl(@NotNull InterceptorAnnoInfo info) {
-            this.interceptorAnnoInfo = info;
+        public NavigationImpl(@NotNull PsiAnnotation interceptorAnno) {
+            this.interceptorAnno = interceptorAnno;
         }
 
         @Override
         public void navigate(MouseEvent e, PsiElement elt) {
+
+            InterceptorAnnoInfo interceptorAnnoInfo = getInterceptorInfoFromAnno(interceptorAnno);
+            if (interceptorAnnoInfo == null) {
+                return;
+            }
+
             GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());
             PsiClass routerAnnoBuilderClass = javaPsiFacade.findClass(Constants.RouterAnnoClassName, allScope);
@@ -155,7 +162,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
                 InterceptorInfo interceptorInfo = referenceExpressionListResultList.get(i);
                 boolean isExistOne = false;
                 for (String interceptorName : interceptorInfo.interceptorNames) {
-                    if (interceptorAnnoInfo.interceptorName.equals(interceptorName)) {
+                    if (interceptorAnnoInfo.name.equals(interceptorName)) {
                         isExistOne = true;
                         break;
                     }

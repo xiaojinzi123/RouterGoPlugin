@@ -13,17 +13,12 @@ public class InterceptorNavagationInfo {
      */
     public PsiElement psiElement;
 
-    /**
-     * 拦截器的名称
-     */
-    public String interceptorName;
 
     public InterceptorNavagationInfo() {
     }
 
-    public InterceptorNavagationInfo(PsiElement psiElement, String interceptorName) {
+    public InterceptorNavagationInfo(PsiElement psiElement) {
         this.psiElement = psiElement;
-        this.interceptorName = interceptorName;
     }
 
 }

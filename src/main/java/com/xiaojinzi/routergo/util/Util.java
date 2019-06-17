@@ -187,13 +187,19 @@ public class Util {
         return null;
     }
 
+    public static boolean isRouteAble(@NotNull PsiReferenceExpression psiReferenceExpression) {
+        return getHostAndPath(psiReferenceExpression) == null ? false : true;
+    }
+
     /**
      * .....host("order") 中拿到 "order" 字符串 也支持 hostAndPath 方法
      *
      * @param psiReferenceExpression
-     * @param info
+     * @return 返回一个 RouterInfo 对象表示获取到的 Host 和 Path
      */
-    public static void getHostAndPath(@NotNull PsiReferenceExpression psiReferenceExpression, @NotNull final RouterInfo info) {
+    @Nullable
+    public static RouterInfo getHostAndPath(@NotNull PsiReferenceExpression psiReferenceExpression) {
+        RouterInfo info = new RouterInfo();
         // 尝试获取 host() 和 path() 方法写的参数
         try {
             PsiElement psiHostElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
@@ -213,7 +219,11 @@ public class Util {
         } catch (Exception ignore) {
             // ignore
         }
-
+        if (info.isValid()) {
+            return info;
+        }else {
+            return null;
+        }
     }
 
     /**

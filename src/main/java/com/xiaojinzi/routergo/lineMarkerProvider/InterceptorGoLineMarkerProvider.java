@@ -54,11 +54,12 @@ public class InterceptorGoLineMarkerProvider implements LineMarkerProvider {
         if (element.getParent() != null && isRouterInterceptorNamesMethod(element.getParent().getPrevSibling())) {
             String interceptorName = Util.getStringValue(element);
             if (interceptorName != null) {
-                InterceptorNavagationInfo interceptorInfo = new InterceptorNavagationInfo(element, interceptorName);
-                NavigationImpl navigation = new NavigationImpl(interceptorInfo);
+                // 拦截器名称的信息
+                PsiElement targetPsiElement = element;
+                NavigationImpl navigation = new NavigationImpl(targetPsiElement);
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                        interceptorInfo.psiElement,
-                        interceptorInfo.psiElement.getTextRange(),
+                        targetPsiElement,
+                        targetPsiElement.getTextRange(),
                         interceptorLink, null,
                         navigation, GutterIconRenderer.Alignment.LEFT
                 );
@@ -154,15 +155,21 @@ public class InterceptorGoLineMarkerProvider implements LineMarkerProvider {
 
     public static class NavigationImpl implements GutterIconNavigationHandler {
 
+        /**
+         * 可能是 Router.with(xxx)...interceptorNames(xxx)
+         * 也可能是 @RouterAnno(interceptorNames(xxxx))
+         */
         @NotNull
-        private InterceptorNavagationInfo info;
+        private PsiElement psiElement;
 
-        public NavigationImpl(@NotNull InterceptorNavagationInfo info) {
-            this.info = info;
+        public NavigationImpl(@NotNull PsiElement psiElement) {
+            this.psiElement = psiElement;
         }
 
         @Override
         public void navigate(MouseEvent e, PsiElement elt) {
+
+            String interceptorName = Util.getStringValue(psiElement);
 
             GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());
@@ -189,7 +196,7 @@ public class InterceptorGoLineMarkerProvider implements LineMarkerProvider {
 
             for (int i = psiAnnotationList.size() - 1; i >= 0; i--) {
                 PsiAnnotation psiAnnotation = psiAnnotationList.get(i);
-                if (isMatchInterceptorName(info.interceptorName, psiAnnotation)) {
+                if (isMatchInterceptorName(interceptorName, psiAnnotation)) {
                     targetAnno = psiAnnotation;
                     break;
                 }

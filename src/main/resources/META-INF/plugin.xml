@@ -4,16 +4,21 @@
     <vendor email="cxj0xiaojinzi@gmail.com" url="https://github.com/xiaojinzi123/RouterGoPlugin">xiaojinzi</vendor>
 
     <description><![CDATA[
-    使用 <a href='https://github.com/xiaojinzi123/Component' >Router</a> 组件化方案的小伙伴在开发的时候,
-    由于组件化屏蔽了Activity实现,取而代之的是 url 或者 host 和 path,
-    这个插件的作用就是让你可以在使用路由的地方可以直接帮助您导航到目标界面,也支持导航到拦截器定义处.极大的方便了
-     开发者查找的时间<br>
-     注意点：当你写了一个确定能直达却点击没反应的时候,其实这是 idea 的缓存,你把 host(xxx) 方法去掉 t变为 hos(xxx)
-     然后再打出 host(xxx),让左侧的图标重新加载就行了,interceptorNames方法同上述
-    <em>RouterGo</em>
-    ]]></description>
+    when you use <a href='https://github.com/xiaojinzi123/Component' >Router</a> for Component in Android.
+    This plugin can jump to target Activity when you click the icon on the left of code.
+    It also support the Interceptor of router.<em>RouterGo</em>
+    ]]>
+    </description>
 
-    <change-notes>支持路由直达,支持拦截器名称直达拦截器定义处,并且支持路由目标和拦截器被使用的查询</change-notes>
+    <change-notes>
+    v1.1.1
+        optimize code
+    v1.1
+        1.The logo was updated
+        2.The implementation code was updated after "https://github.com/xiaojinzi123/Component" published
+    </change-notes>
+
+    <version>1.1.1</version>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -28,6 +33,6 @@
     </extensions>
 
     <depends>org.jetbrains.android</depends>
-    <depends>org.jetbrains.android</depends>
     <depends>org.intellij.groovy</depends>
+
 </idea-plugin>

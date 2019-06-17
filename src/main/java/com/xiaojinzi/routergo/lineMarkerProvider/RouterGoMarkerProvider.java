@@ -74,14 +74,15 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
                 boolean isHostAndPathMethod = targetPsiMethod.equals(routerRequestHostAndPathMethod) ||
                         targetPsiMethod.equals(routerHostAndPathMethod) ||
                         targetPsiMethod.equals(rxRouterHostAndPathMethod);
+                // 如果是 host 方法或者是 hostAndPath 方法
                 if (isHostMethod || isHostAndPathMethod) {
-                    final RouterInfo info = getRouterInfo(psiReferenceExpression);
-                    if (info != null) {
+                    // 如果是一个有 host 和 path 方法 或者 hostAndPath 方法使用的
+                    if (Util.isRouteAble(psiReferenceExpression)) {
                         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                                 psiReferenceExpression,
                                 psiReferenceExpression.getTextRange(),
                                 routerLink, null,
-                                new NavigationImpl(info), GutterIconRenderer.Alignment.RIGHT
+                                new NavigationImpl(psiReferenceExpression), GutterIconRenderer.Alignment.RIGHT
                         );
                         return markerInfo;
                     }
@@ -103,25 +104,27 @@ public class RouterGoMarkerProvider implements LineMarkerProvider {
      */
     @Nullable
     private RouterInfo getRouterInfo(@NotNull PsiReferenceExpression psiReferenceExpression) {
-        final RouterInfo info = new RouterInfo();
-        Util.getHostAndPath(psiReferenceExpression, info);
-        if (info.host == null || info.path == null) {
-            return null;
-        }
+        final RouterInfo info = Util.getHostAndPath(psiReferenceExpression);
         return info;
     }
 
     private class NavigationImpl implements GutterIconNavigationHandler {
 
         @NotNull
-        private RouterInfo info;
+        private PsiReferenceExpression psiReferenceExpression;
 
-        public NavigationImpl(@NotNull RouterInfo info) {
-            this.info = info;
+        public NavigationImpl(@NotNull PsiReferenceExpression psiReferenceExpression) {
+            this.psiReferenceExpression = psiReferenceExpression;
         }
 
         @Override
         public void navigate(MouseEvent e, PsiElement elt) {
+
+            final RouterInfo info = getRouterInfo(psiReferenceExpression);
+            if (info == null) {
+                return;
+            }
+
             //Messages.showMessageDialog("host = " + info.host + "\npath = " + info.path , "tip", null);
             GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());

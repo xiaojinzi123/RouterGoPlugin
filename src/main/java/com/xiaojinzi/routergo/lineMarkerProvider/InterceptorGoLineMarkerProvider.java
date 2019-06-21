@@ -13,16 +13,12 @@ import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.search.searches.AnnotatedElementsSearch;
 import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.bean.InterceptorInfo;
-import com.xiaojinzi.routergo.bean.InterceptorNavagationInfo;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

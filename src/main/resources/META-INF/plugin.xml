@@ -35,9 +35,14 @@
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProviderForKotlin"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProviderForKotlin"/>
     </extensions>
 
     <depends>org.jetbrains.android</depends>
     <depends>org.intellij.groovy</depends>
+    <depends optional="true">org.jetbrains.kotlin</depends>
 
 </idea-plugin>

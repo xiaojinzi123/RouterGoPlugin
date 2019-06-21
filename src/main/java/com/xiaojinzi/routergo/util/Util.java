@@ -1,12 +1,18 @@
 package com.xiaojinzi.routergo.util;
 
+import com.intellij.lang.jvm.annotation.JvmAnnotationArrayValue;
+import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
+import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
+import com.intellij.psi.search.searches.AnnotatedElementsSearch;
+import com.intellij.psi.search.searches.MethodReferencesSearch;
 import com.xiaojinzi.routergo.Constants;
+import com.xiaojinzi.routergo.bean.InterceptorAnnoInfo;
 import com.xiaojinzi.routergo.bean.RouterInfo;
 import org.jetbrains.android.dom.manifest.Application;
 import org.jetbrains.android.facet.AndroidFacet;
@@ -14,9 +20,166 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Util {
+
+    /**
+     * 获取调用了 Router...interceptorNames 方法的所有引用
+     *
+     * @param project
+     * @return
+     */
+    @NotNull
+    public static List<PsiReference> getAllInterceptorMethodReferences(@NotNull Project project) {
+        List<PsiReference> referenceMethodList = new ArrayList<>();
+        GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+        JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+
+        PsiClass routerBuilderClass = javaPsiFacade.findClass(Constants.RouterBuilderClassName, allScope);
+        // 这个可能为空
+        PsiClass rxRouterBuilderClass = javaPsiFacade.findClass(Constants.RxRouterBuilderClassName, allScope);
+
+        // 搜索 使用中的 interceptorNames 的方法
+        PsiMethod psiMethodRouter = (PsiMethod) routerBuilderClass.findMethodsByName(Constants.RouterInterceptorNameMethodName)[0];
+        referenceMethodList.addAll(MethodReferencesSearch.search(psiMethodRouter).findAll());
+
+        // 如果用户依赖了 rx 版本的库,那么才去寻找对应的方法
+        if (rxRouterBuilderClass != null) {
+            PsiMethod psiMethodRxRouter = (PsiMethod) rxRouterBuilderClass.findMethodsByName(Constants.RouterInterceptorNameMethodName)[0];
+            referenceMethodList.addAll(MethodReferencesSearch.search(psiMethodRxRouter).findAll());
+        }
+        return referenceMethodList;
+    }
+
+    /**
+     * 获取所有使用 RouterAnno 注解的注解集合
+     *
+     * @param project
+     * @return
+     */
+    @NotNull
+    public static List<PsiAnnotation> getAllRouterAnno(@NotNull Project project) {
+
+        GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+        JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+
+        PsiClass routerAnnoClass = javaPsiFacade.findClass(Constants.RouterAnnoClassName, allScope);
+
+        // 包括 java 和 kotlin 使用 RouterAnno
+        List<PsiAnnotation> psiAnnotationList = new ArrayList<>();
+
+        Collection<PsiClass> routerActivities = AnnotatedElementsSearch
+                .searchPsiClasses(routerAnnoClass, allScope)
+                .findAll();
+        Collection<PsiMethod> routerStaticMethods = AnnotatedElementsSearch
+                .searchPsiMethods(routerAnnoClass, allScope)
+                .findAll();
+
+        for (PsiClass routerClass : routerActivities) {
+            // Activity上的注解
+            PsiAnnotation routerClassAnnotation = routerClass.getAnnotation(routerAnnoClass.getQualifiedName());
+            if (routerClassAnnotation != null) {
+                psiAnnotationList.add(routerClassAnnotation);
+            }
+        }
+        for (PsiMethod routerStaticMethod : routerStaticMethods) {
+            // 静态方法上的注解
+            PsiAnnotation routerStaticMethodAnnotation = routerStaticMethod.getAnnotation(routerAnnoClass.getQualifiedName());
+            if (routerStaticMethodAnnotation != null) {
+                psiAnnotationList.add(routerStaticMethodAnnotation);
+            }
+        }
+        return psiAnnotationList;
+    }
+
+    /**
+     * 从 RouterAnno 注解中获取 interceptorNames 属性的集合
+     *
+     * @param psiAnnotation
+     * @return
+     */
+    @NotNull
+    public static List<String> getInterceptorNamesFromRouterAnno(@NotNull PsiAnnotation psiAnnotation) {
+        try {
+            List<String> result = new ArrayList<>();
+            JvmAnnotationArrayValue psiAnnotationArrayValue = (JvmAnnotationArrayValue) psiAnnotation.findAttribute(Constants.RouterAnnoInterceptorName).getAttributeValue();
+            List<JvmAnnotationAttributeValue> values = psiAnnotationArrayValue.getValues();
+            for (JvmAnnotationAttributeValue value : values) {
+                if (value instanceof JvmAnnotationConstantValue) {
+                    result.add((String) ((JvmAnnotationConstantValue) value).getConstantValue());
+                }
+            }
+            return result;
+        } catch (Exception ignore) {
+            // ignore
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * 从注解 @InterceptorAnno("login") 中获取拦截器名称信息
+     *
+     * @param interceptorAnno
+     * @return
+     */
+    @Nullable
+    private InterceptorAnnoInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
+        String interceptorName = null;
+        try {
+            JvmAnnotationAttributeValue hostAttributeValue = interceptorAnno.findAttribute(Constants.InterceptorAnnoValueName).getAttributeValue();
+            if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
+                interceptorName = (String) ((JvmAnnotationConstantValue) hostAttributeValue).getConstantValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
+        }
+        if (interceptorName == null) {
+            return null;
+        }
+        return new InterceptorAnnoInfo(interceptorName);
+    }
+
+    @Nullable
+    public static RouterInfo getRouterInfoFromAnno(@NotNull PsiAnnotation routerAnno) {
+        RouterInfo routerInfo = new RouterInfo();
+        String hostAndPath = null;
+        try {
+            JvmAnnotationAttributeValue hostAttributeValue = routerAnno.findAttribute(Constants.RouterAnnoHostName).getAttributeValue();
+            if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
+                routerInfo.host = (String) ((JvmAnnotationConstantValue) hostAttributeValue).getConstantValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
+        }
+        try {
+            JvmAnnotationAttributeValue pathAttributeValue = routerAnno.findAttribute(Constants.RouterAnnoPathName).getAttributeValue();
+            if (pathAttributeValue instanceof JvmAnnotationConstantValue) {
+                routerInfo.path = (String) ((JvmAnnotationConstantValue) pathAttributeValue).getConstantValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
+        }
+        try {
+            JvmAnnotationAttributeValue pathAttributeValue = routerAnno.findAttribute(Constants.RouterAnnoHostAndPathName).getAttributeValue();
+            if (pathAttributeValue instanceof JvmAnnotationConstantValue) {
+                hostAndPath = (String) ((JvmAnnotationConstantValue) pathAttributeValue).getConstantValue();
+            }
+        } catch (Exception ignore) {
+            // ignore
+        }
+        // 可能是默认值
+        if (routerInfo.host == null) {
+            routerInfo.host = Util.getHostFromRouterAnno(routerAnno);
+        }
+        routerInfo.setHostAndPath(hostAndPath);
+        if (routerInfo.host == null || routerInfo.path == null) {
+            return null;
+        }
+        return routerInfo;
+    }
 
     @Nullable
     public static String getHostFromRouterAnno(@NotNull PsiElement psiAnnotation) {
@@ -188,7 +351,7 @@ public class Util {
     }
 
     public static boolean isRouteAble(@NotNull PsiReferenceExpression psiReferenceExpression) {
-        return getHostAndPath(psiReferenceExpression) == null ? false : true;
+        return getRouterInfoFromPsiReferenceExpression(psiReferenceExpression) == null ? false : true;
     }
 
     /**
@@ -198,7 +361,7 @@ public class Util {
      * @return 返回一个 RouterInfo 对象表示获取到的 Host 和 Path
      */
     @Nullable
-    public static RouterInfo getHostAndPath(@NotNull PsiReferenceExpression psiReferenceExpression) {
+    public static RouterInfo getRouterInfoFromPsiReferenceExpression(@NotNull PsiReferenceExpression psiReferenceExpression) {
         RouterInfo info = new RouterInfo();
         // 尝试获取 host() 和 path() 方法写的参数
         try {
@@ -221,7 +384,7 @@ public class Util {
         }
         if (info.isValid()) {
             return info;
-        }else {
+        } else {
             return null;
         }
     }

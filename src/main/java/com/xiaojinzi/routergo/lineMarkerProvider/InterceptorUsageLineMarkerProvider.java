@@ -22,6 +22,8 @@ import com.xiaojinzi.routergo.bean.InterceptorInfo;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.idea.references.KtSimpleNameReference;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -43,18 +45,13 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             if (interceptorAnno == null) {
                 return null;
             }
-            // 如果有这个参数
-            InterceptorAnnoInfo info = getInterceptorInfoFromAnno(interceptorAnno);
-            if (info != null) {
-                PsiElement targetPsiElement = interceptorAnno;
-                LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                        targetPsiElement,
-                        targetPsiElement.getTextRange(),
-                        interceptorLink, null,
-                        new NavigationImpl(interceptorAnno), GutterIconRenderer.Alignment.RIGHT
-                );
-                return markerInfo;
-            }
+            PsiElement targetPsiElement = interceptorAnno;
+            LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
+                    targetPsiElement,
+                    targetPsiElement.getTextRange(),
+                    interceptorLink, null,new InterceptorUsageNavigation(interceptorAnno), GutterIconRenderer.Alignment.RIGHT
+            );
+            return markerInfo;
         }
         return null;
     }
@@ -63,24 +60,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
     public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
     }
 
-    @Nullable
-    private InterceptorAnnoInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
-        String interceptorName = null;
-        try {
-            JvmAnnotationAttributeValue hostAttributeValue = interceptorAnno.findAttribute(Constants.InterceptorAnnoValueName).getAttributeValue();
-            if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
-                interceptorName = (String) ((JvmAnnotationConstantValue) hostAttributeValue).getConstantValue();
-            }
-        } catch (Exception ignore) {
-            // ignore
-        }
-        if (interceptorName == null) {
-            return null;
-        }
-        return new InterceptorAnnoInfo(interceptorName);
-    }
-
-    private class NavigationImpl implements GutterIconNavigationHandler {
+    /*private class NavigationImpl implements GutterIconNavigationHandler {
 
         @NotNull
         private PsiAnnotation interceptorAnno;
@@ -92,6 +72,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
         @Override
         public void navigate(MouseEvent e, PsiElement elt) {
 
+            // 拿到拦截器注解的信息
             InterceptorAnnoInfo interceptorAnnoInfo = getInterceptorInfoFromAnno(interceptorAnno);
             if (interceptorAnnoInfo == null) {
                 return;
@@ -99,8 +80,10 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
 
             GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());
+
             PsiClass routerAnnoBuilderClass = javaPsiFacade.findClass(Constants.RouterAnnoClassName, allScope);
             PsiClass routerBuilderClass = javaPsiFacade.findClass(Constants.RouterBuilderClassName, allScope);
+            // 这个可能为空
             PsiClass rxRouterBuilderClass = javaPsiFacade.findClass(Constants.RxRouterBuilderClassName, allScope);
 
             // 所有方法的引用都会在这里
@@ -108,18 +91,24 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             // 所有使用 RouterAnno 注解中的 interceptorNames 属性方法的
             List<PsiReference> referenceAnnoMethodList = new ArrayList<>();
 
+            // 搜索 使用中的 interceptorNames 的方法
             PsiMethod psiMethodRouter = (PsiMethod) routerBuilderClass.findMethodsByName(Constants.RouterInterceptorNameMethodName)[0];
             referenceMethodList.addAll(MethodReferencesSearch.search(psiMethodRouter).findAll());
 
-            PsiMethod psiMethodRxRouter = (PsiMethod) rxRouterBuilderClass.findMethodsByName(Constants.RouterInterceptorNameMethodName)[0];
-            referenceMethodList.addAll(MethodReferencesSearch.search(psiMethodRxRouter).findAll());
+            // 如果用户依赖了 rx 版本的库,那么才去寻找对应的方法
+            if (rxRouterBuilderClass != null) {
+                PsiMethod psiMethodRxRouter = (PsiMethod) rxRouterBuilderClass.findMethodsByName(Constants.RouterInterceptorNameMethodName)[0];
+                referenceMethodList.addAll(MethodReferencesSearch.search(psiMethodRxRouter).findAll());
+            }
 
+            // 寻找注解 RouterAnno 的
             PsiAnnotationMethod psiAnnotationMethod = (PsiAnnotationMethod) routerAnnoBuilderClass.findMethodsByName(Constants.RouterAnnoInterceptorName)[0];
             referenceAnnoMethodList.addAll(MethodReferencesSearch.search(psiAnnotationMethod).findAll());
 
             // 过滤后的结果
             List<PsiReferenceExpression> referenceExpressionList = new ArrayList<>();
             List<PsiNameValuePair> nameValuePairList = new ArrayList<>();
+            List<KtAnnotationEntry> ktAnnotationEntryList = new ArrayList<>();
 
             // 过滤一下不是 PsiReferenceExpress
             for (PsiReference psiReference : referenceMethodList) {
@@ -129,10 +118,15 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             }
             // 过滤一下不是注解中使用到的
             for (PsiReference psiReference : referenceAnnoMethodList) {
-                if (psiReference.getElement() != null && psiReference.getElement().getParent() instanceof PsiNameValuePair) {
-                    nameValuePairList.add((PsiNameValuePair) psiReference.getElement().getParent());
+                if (psiReference.getElement() != null) {
+                    if (psiReference.getElement().getParent() instanceof PsiNameValuePair) {
+                        nameValuePairList.add((PsiNameValuePair) psiReference.getElement().getParent());
+                    } else if (psiReference.getElement().getParent().getParent().getParent().getParent() instanceof KtAnnotationEntry) {
+                        ktAnnotationEntryList.add((KtAnnotationEntry) psiReference.getElement().getParent().getParent().getParent().getParent());
+                    }
                 }
             }
+
             referenceMethodList = null;
             referenceAnnoMethodList = null;
 
@@ -191,7 +185,7 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
 
         }
 
-    }
+    }*/
 
     @Nullable
     private InterceptorInfo getInterceptorInfoFromPsiReferenceExpression(@NotNull PsiReferenceExpression psiReferenceExpression) {
@@ -204,11 +198,11 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
     }
 
     @Nullable
-    private InterceptorInfo getInterceptorInfoFromPsiNameValuePair(@NotNull PsiNameValuePair PsiNameValuePair) {
+    private InterceptorInfo getInterceptorInfoFromPsiNameValuePair(@NotNull PsiNameValuePair psiNameValuePair) {
         InterceptorInfo interceptorInfo = new InterceptorInfo();
         // 一个 RouterAnno 注解中的 interceptorNames 中的拦截器的名称列表
         List<String> interceptorNames = new ArrayList<String>();
-        PsiElement lastChild = PsiNameValuePair.getLastChild();
+        PsiElement lastChild = psiNameValuePair.getLastChild();
         if (lastChild instanceof PsiArrayInitializerMemberValue) {
             PsiArrayInitializerMemberValue initializerMemberValue = (PsiArrayInitializerMemberValue) lastChild;
             for (PsiAnnotationMemberValue initializer : initializerMemberValue.getInitializers()) {

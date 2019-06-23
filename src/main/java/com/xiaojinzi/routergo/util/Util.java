@@ -421,4 +421,13 @@ public class Util {
         return value;
     }
 
+    public static boolean isStringExpression(@NotNull PsiElement psiElement) {
+        String stringValue = getStringValue(psiElement);
+        if (stringValue == null || "".equals(stringValue)) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
 }

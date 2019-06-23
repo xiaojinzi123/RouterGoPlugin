@@ -30,6 +30,8 @@
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoInRouterAnnoLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorUsageLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoLineMarkerProvider"/>
@@ -37,6 +39,10 @@
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="kotlin"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProviderForKotlin"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoInRouterAnnoLineMarkerProviderForKotlin"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoLineMarkerProviderForKotlin"/>
         <codeInsight.lineMarkerProvider language="kotlin"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProviderForKotlin"/>
     </extensions>

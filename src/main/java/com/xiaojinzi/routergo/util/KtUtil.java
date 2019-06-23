@@ -170,4 +170,13 @@ public class KtUtil {
         return Collections.emptyList();
     }
 
+    public static boolean isStringExpression(@NotNull PsiElement element) {
+        String stringValue = getStringValue(element);
+        if (stringValue == null || "".equals(stringValue)) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
 }

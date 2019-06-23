@@ -38,7 +38,6 @@ import java.util.Set;
 public class RouterUsageLineMarkerProviderForKotlin implements LineMarkerProvider {
 
     private static Icon routerLink = IconLoader.getIcon("logo.png");
-    private static Icon interceptorLink = IconLoader.getIcon("interceptor_link.png");
 
     @Nullable
     @Override

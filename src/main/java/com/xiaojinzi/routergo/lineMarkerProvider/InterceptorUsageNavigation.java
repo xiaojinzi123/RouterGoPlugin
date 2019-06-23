@@ -7,11 +7,10 @@ import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.pom.Navigatable;
-import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.ProjectScope;
-import com.intellij.psi.search.searches.AnnotatedElementsSearch;
-import com.intellij.psi.search.searches.MethodReferencesSearch;
+import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.ui.awt.RelativePoint;
 import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.bean.InterceptorAnnoInfo;
@@ -24,10 +23,7 @@ import org.jetbrains.kotlin.idea.references.KtSimpleNameReference;
 
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * 拦截器的使用查询,有以下几个方面
@@ -51,7 +47,7 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
         // 拿到拦截器注解的信息
         InterceptorAnnoInfo tempInterceptorAnnoInfo = null;
         if (interceptorAnno != null) {
-            tempInterceptorAnnoInfo = getInterceptorInfoFromAnno(interceptorAnno);
+            tempInterceptorAnnoInfo = Util.getInterceptorInfoFromInterceptorAnno(interceptorAnno);
         }
         if (tempInterceptorAnnoInfo == null) {
             return;
@@ -117,23 +113,6 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
             Messages.showErrorDialog("不好意思,没找到", "来自小金子的警告");
         }
 
-    }
-
-    @Nullable
-    private InterceptorAnnoInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
-        String interceptorName = null;
-        try {
-            JvmAnnotationAttributeValue hostAttributeValue = interceptorAnno.findAttribute(Constants.InterceptorAnnoValueName).getAttributeValue();
-            if (hostAttributeValue instanceof JvmAnnotationConstantValue) {
-                interceptorName = (String) ((JvmAnnotationConstantValue) hostAttributeValue).getConstantValue();
-            }
-        } catch (Exception ignore) {
-            // ignore
-        }
-        if (interceptorName == null) {
-            return null;
-        }
-        return new InterceptorAnnoInfo(interceptorName);
     }
 
 }

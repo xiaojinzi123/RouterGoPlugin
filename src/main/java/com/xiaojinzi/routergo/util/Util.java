@@ -126,7 +126,7 @@ public class Util {
      * @return
      */
     @Nullable
-    private InterceptorAnnoInfo getInterceptorInfoFromAnno(@NotNull PsiAnnotation interceptorAnno) {
+    public static InterceptorAnnoInfo getInterceptorInfoFromInterceptorAnno(@NotNull PsiAnnotation interceptorAnno) {
         String interceptorName = null;
         try {
             JvmAnnotationAttributeValue hostAttributeValue = interceptorAnno.findAttribute(Constants.InterceptorAnnoValueName).getAttributeValue();

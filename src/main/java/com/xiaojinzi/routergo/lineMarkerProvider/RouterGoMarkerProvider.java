@@ -1,24 +1,13 @@
 package com.xiaojinzi.routergo.lineMarkerProvider;
 
-import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
-import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
-import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.ProjectScope;
-import com.intellij.psi.search.searches.AnnotatedElementsSearch;
-import com.xiaojinzi.routergo.Constants;
-import com.xiaojinzi.routergo.bean.RouterInfo;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiReferenceExpression;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * com.intellij.psi.search

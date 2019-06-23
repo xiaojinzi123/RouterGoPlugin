@@ -1,10 +1,11 @@
 package com.xiaojinzi.routergo.lineMarkerProvider;
 
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiNameValuePair;
 import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * 拦截器的到达目标的实现,这是 RouterAnno 注解中的 interceptorNames 的属性的使用跳转

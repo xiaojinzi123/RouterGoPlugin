@@ -1,15 +1,10 @@
 package com.xiaojinzi.routergo.lineMarkerProvider;
 
-import com.intellij.codeInsight.daemon.LineMarkerInfo;
-import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiReferenceExpression;
 import com.xiaojinzi.routergo.util.KtUtil;
-import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.idea.references.KtSimpleReference;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
 
 /**

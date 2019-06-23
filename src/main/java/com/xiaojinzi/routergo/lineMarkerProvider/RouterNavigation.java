@@ -13,7 +13,6 @@ import com.xiaojinzi.routergo.bean.RouterInfo;
 import com.xiaojinzi.routergo.util.KtUtil;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.psi.KtNameReferenceExpression;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
 
 import java.awt.event.MouseEvent;

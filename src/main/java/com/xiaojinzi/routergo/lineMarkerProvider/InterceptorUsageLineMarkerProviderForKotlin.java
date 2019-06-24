@@ -12,24 +12,21 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 /**
  * 使用 RouterAnno 的地方的显示一个图标,可以展示所有用到这个界面 url 的选项
  */
-public class RouterUsageLineMarkerProviderForKotlin implements LineMarkerProvider {
+public class InterceptorUsageLineMarkerProviderForKotlin implements LineMarkerProvider {
 
     @Nullable
     @Override
     public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
-        // 如果是一个注解
         if (element instanceof KtAnnotationEntry) {
-            KtAnnotationEntry annotationEntry = (KtAnnotationEntry) element;
+            KtAnnotationEntry ktAnnotationEntry = (KtAnnotationEntry) element;
             // 注解的名字
-            String annoStr = annotationEntry.getShortName().asString();
-            // 如果是 RouterAnno
-            if (Constants.RouterAnnoClassShortName.equals(annoStr)) {
-                KtAnnotationEntry targetPsiAnnotation = annotationEntry;
+            String annoStr = ktAnnotationEntry.getShortName().asString();
+            if (Constants.InterceptorAnnoClassShortName.equals(annoStr)) {
+                KtAnnotationEntry targetPsiAnnotation = ktAnnotationEntry;
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                         targetPsiAnnotation,
                         targetPsiAnnotation.getTextRange(),
-                        Constants.ROUTER_LINK, null,
-                        new RouterUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
+                        Constants.INTERCEPTOR_LINK, null,new InterceptorUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
                 );
                 return markerInfo;
             }

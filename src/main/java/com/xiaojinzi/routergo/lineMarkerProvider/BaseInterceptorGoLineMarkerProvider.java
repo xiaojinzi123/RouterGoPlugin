@@ -3,21 +3,17 @@ package com.xiaojinzi.routergo.lineMarkerProvider;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerProvider {
 
     protected static PsiMethod routerInterceptorNameMethod = null;
     protected static PsiMethod rxRouterInterceptorNameMethod = null;
-
-    protected static Icon interceptorLink = IconLoader.getIcon("interceptor_link.png");
 
     @Nullable
     @Override
@@ -33,7 +29,7 @@ public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerP
             LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                     targetPsiElement,
                     targetPsiElement.getTextRange(),
-                    interceptorLink, null,
+                    Constants.INTERCEPTOR_LINK, null,
                     new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.LEFT
             );
             return markerInfo;

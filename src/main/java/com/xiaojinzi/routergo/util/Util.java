@@ -182,11 +182,11 @@ public class Util {
     }
 
     @Nullable
-    public static String getHostFromRouterAnno(@NotNull PsiElement psiAnnotation) {
+    public static String getHostFromRouterAnno(@NotNull PsiElement psiElement) {
         String host = null;
         try {
             // 找到对应的 module
-            Module module = ModuleUtil.findModuleForPsiElement(psiAnnotation);
+            Module module = ModuleUtil.findModuleForPsiElement(psiElement);
             // 这里读取GroovyFile文件中的 host
             Application manifestApplication = AndroidFacet.getInstance(module).getManifest().getApplication();
             if (manifestApplication.getMetaDatas() != null) {

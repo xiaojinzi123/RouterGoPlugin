@@ -2,14 +2,11 @@ package com.xiaojinzi.routergo.lineMarkerProvider;
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 public abstract class BaseRouterGoMarkerProvider implements LineMarkerProvider {
 
@@ -20,8 +17,6 @@ public abstract class BaseRouterGoMarkerProvider implements LineMarkerProvider {
     protected static PsiMethod routerRequestHostAndPathMethod = null;
     protected static PsiMethod routerHostAndPathMethod = null;
     protected static PsiMethod rxRouterHostAndPathMethod = null;
-
-    protected static Icon routerLink = IconLoader.getIcon("logo.png");
 
     @Nullable
     @Override

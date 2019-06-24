@@ -1,11 +1,20 @@
 package com.xiaojinzi.routergo;
 
+import com.intellij.openapi.util.IconLoader;
+
+import javax.swing.*;
+
 /**
  * 常量类
  */
 public class Constants {
 
+    public static Icon ROUTER_LINK = IconLoader.getIcon("logo.png");
+
+    public static Icon INTERCEPTOR_LINK = IconLoader.getIcon("interceptor_link.png");
+
     public static String InterceptorAnnoClassName = "com.xiaojinzi.component.anno.InterceptorAnno";
+    public static String InterceptorAnnoClassShortName = "InterceptorAnno";
     public static String RouterAnnoClassName = "com.xiaojinzi.component.anno.RouterAnno";
     public static String RouterAnnoClassShortName = "RouterAnno";
     public static String RouterClassName = "com.xiaojinzi.component.impl.Router";

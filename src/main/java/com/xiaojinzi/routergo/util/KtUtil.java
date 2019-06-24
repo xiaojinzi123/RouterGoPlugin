@@ -2,6 +2,7 @@ package com.xiaojinzi.routergo.util;
 
 import com.intellij.psi.*;
 import com.xiaojinzi.routergo.Constants;
+import com.xiaojinzi.routergo.bean.InterceptorAnnoInfo;
 import com.xiaojinzi.routergo.bean.RouterInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,6 +74,11 @@ public class KtUtil {
             } else if (Constants.RouterAnnoHostAndPathName.equals(annoAttribute)) { // 如果是 hostAndPath
                 routerInfo.setHostAndPath(KtUtil.getStringValue(argumentExpression));
             }
+        }
+
+        // 可能是默认值
+        if (routerInfo.host == null) {
+            routerInfo.host = Util.getHostFromRouterAnno(ktAnnotationEntry);
         }
 
         if (routerInfo.isValid()) {
@@ -174,9 +180,32 @@ public class KtUtil {
         String stringValue = getStringValue(element);
         if (stringValue == null || "".equals(stringValue)) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
 
+    public static InterceptorAnnoInfo getInterceptorInfoFromInterceptorAnno(@NotNull KtAnnotationEntry targetPsiAnnotation) {
+        String intercepterName = null;
+        List<? extends ValueArgument> valueArguments = targetPsiAnnotation.getValueArguments();
+        for (ValueArgument valueArgument : valueArguments) {
+            KtExpression argumentExpression = valueArgument.getArgumentExpression();
+            // 注解的属性的名称
+            String annoAttribute = null;
+            // kotlin 的 value 不会获取的出来
+            if (valueArgument.getArgumentName() == null) {
+                annoAttribute = Constants.InterceptorAnnoValueName;
+            }else {
+                annoAttribute = valueArgument.getArgumentName().getAsName().asString();
+            }
+            if (Constants.InterceptorAnnoValueName.equals(annoAttribute)) { // 如果是 value
+                intercepterName = KtUtil.getStringValue(argumentExpression);
+            }
+        }
+        if (intercepterName == null) {
+            return null;
+        } else {
+            return new InterceptorAnnoInfo(intercepterName);
+        }
+    }
 }

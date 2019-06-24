@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.util.KtUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ public class RouterGoMarkerProviderForKotlin extends BaseRouterGoMarkerProvider 
                         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                                 targetPsiElement,
                                 targetPsiElement.getTextRange(),
-                                routerLink, null, new RouterNavigation(ktSimpleNameExpression), GutterIconRenderer.Alignment.RIGHT
+                                Constants.ROUTER_LINK, null, new RouterNavigation(ktSimpleNameExpression), GutterIconRenderer.Alignment.RIGHT
                         );
                         return markerInfo;
                     }

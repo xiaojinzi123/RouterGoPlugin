@@ -2,8 +2,6 @@ package com.xiaojinzi.routergo.lineMarkerProvider;
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.navigation.NavigationUtil;
-import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
-import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.pom.Navigatable;
@@ -12,14 +10,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.ui.awt.RelativePoint;
-import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.bean.InterceptorAnnoInfo;
 import com.xiaojinzi.routergo.bean.InterceptorInfo;
 import com.xiaojinzi.routergo.util.KtUtil;
 import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.idea.references.KtSimpleNameReference;
+import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -37,8 +34,18 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
     @NotNull
     private PsiAnnotation interceptorAnno;
 
+    /**
+     * For Kotlin
+     */
+    @NotNull
+    private KtAnnotationEntry targetPsiAnnotation;
+
     public InterceptorUsageNavigation(@NotNull PsiAnnotation interceptorAnno) {
         this.interceptorAnno = interceptorAnno;
+    }
+
+    public InterceptorUsageNavigation(@NotNull KtAnnotationEntry targetPsiAnnotation) {
+        this.targetPsiAnnotation = targetPsiAnnotation;
     }
 
     @Override
@@ -48,6 +55,9 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
         InterceptorAnnoInfo tempInterceptorAnnoInfo = null;
         if (interceptorAnno != null) {
             tempInterceptorAnnoInfo = Util.getInterceptorInfoFromInterceptorAnno(interceptorAnno);
+        }
+        if (targetPsiAnnotation != null) {
+            tempInterceptorAnnoInfo = KtUtil.getInterceptorInfoFromInterceptorAnno(targetPsiAnnotation);
         }
         if (tempInterceptorAnnoInfo == null) {
             return;

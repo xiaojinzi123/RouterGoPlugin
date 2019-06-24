@@ -11,6 +11,11 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2</b>
+    <ul>
+        <li> optimize code </li>
+        <li> support kotlin </li>
+    </ul>
     <b>v1.1.1</b>
     <ul>
         <li> optimize code </li>
@@ -23,7 +28,7 @@
     ]]>
     </change-notes>
 
-    <version>1.1.1</version>
+    <version>1.2</version>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -40,11 +45,13 @@
         <codeInsight.lineMarkerProvider language="kotlin"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProviderForKotlin"/>
         <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProviderForKotlin"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoInRouterAnnoLineMarkerProviderForKotlin"/>
         <codeInsight.lineMarkerProvider language="kotlin"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoLineMarkerProviderForKotlin"/>
         <codeInsight.lineMarkerProvider language="kotlin"
-                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProviderForKotlin"/>
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorUsageLineMarkerProviderForKotlin"/>
     </extensions>
 
     <depends>org.jetbrains.android</depends>

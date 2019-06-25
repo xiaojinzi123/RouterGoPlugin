@@ -11,6 +11,14 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.1</b>
+    <ul>
+        <li>
+        fix bug: you can write '<meta-data android:name="host_component2" android:value="component2" />'
+        to tell RouterGo plugin the host of this module. Different module you should define different name.
+        But your name must startWith 'host_'.
+        </li>
+    </ul>
     <b>v1.2</b>
     <ul>
         <li> optimize code </li>

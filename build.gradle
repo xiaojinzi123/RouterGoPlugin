@@ -27,7 +27,7 @@ intellij {
 }
 
 group "com.xiaojinzi.routergo"
-version "1.2"
+version "1.2.1"
 
 publishPlugin {
     token "perm:Y3hqMHhpYW9qaW56aQ==.eGlhb2ppbnpp.0pWMo0igtSrkqvxzPl4MlXm6HO2c0i"

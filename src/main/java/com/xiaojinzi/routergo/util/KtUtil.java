@@ -78,7 +78,7 @@ public class KtUtil {
 
         // 可能是默认值
         if (routerInfo.host == null) {
-            routerInfo.host = Util.getHostFromRouterAnno(ktAnnotationEntry);
+            routerInfo.host = Util.getHostValueFromModule(ktAnnotationEntry);
         }
 
         if (routerInfo.isValid()) {

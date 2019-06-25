@@ -122,7 +122,7 @@ public class RouterNavigation implements GutterIconNavigationHandler {
         }
         // 可能是默认值
         if (routerInfoTarget.host == null) {
-            routerInfoTarget.host = Util.getHostFromRouterAnno(psiAnnotation);
+            routerInfoTarget.host = Util.getHostValueFromModule(psiAnnotation);
         }
         routerInfoTarget.setHostAndPath(hostAndPath);
 

@@ -172,7 +172,7 @@ public class Util {
         }
         // 可能是默认值
         if (routerInfo.host == null) {
-            routerInfo.host = Util.getHostFromRouterAnno(routerAnno);
+            routerInfo.host = Util.getHostValueFromModule(routerAnno);
         }
         routerInfo.setHostAndPath(hostAndPath);
         if (routerInfo.host == null || routerInfo.path == null) {
@@ -182,7 +182,7 @@ public class Util {
     }
 
     @Nullable
-    public static String getHostFromRouterAnno(@NotNull PsiElement psiElement) {
+    public static String getHostValueFromModule(@NotNull PsiElement psiElement) {
         String host = null;
         try {
             // 找到对应的 module
@@ -213,9 +213,18 @@ public class Util {
     @Nullable
     private static String readHostFromMetaData(Object metaData) {
         try {
+            Object nameObj = metaData.getClass().getDeclaredMethod("getName").invoke(metaData);
             Object valueObj = metaData.getClass().getDeclaredMethod("getValue").invoke(metaData);
+            String hostName = (String) nameObj.getClass().getDeclaredMethod("getStringValue").invoke(nameObj);
             String hostValue = (String) valueObj.getClass().getDeclaredMethod("getStringValue").invoke(valueObj);
-            return hostValue;
+            if (hostName != null && hostName.toLowerCase().startsWith("host_")) {
+                if (hostValue == null) {
+                    return null;
+                }else {
+                    return hostValue;
+                }
+            }
+            return null;
         } catch (Exception e) {
         }
         return null;

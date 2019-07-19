@@ -12,18 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerProvider {
 
-    protected static PsiMethod routerInterceptorNameMethod = null;
-    protected static PsiMethod rxRouterInterceptorNameMethod = null;
+    protected PsiMethod routerInterceptorNameMethod = null;
+    protected PsiMethod rxRouterInterceptorNameMethod = null;
 
     @Nullable
     @Override
     public final LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
-        if (routerInterceptorNameMethod == null) {
-            routerInterceptorNameMethod = Util.getRouterInterceptorNameMethod(element.getProject());
-        }
-        if (rxRouterInterceptorNameMethod == null) {
-            rxRouterInterceptorNameMethod = Util.getRxRouterInterceptorNameMethod(element.getProject());
-        }
+        routerInterceptorNameMethod = Util.getRouterInterceptorNameMethod(element.getProject());
+        rxRouterInterceptorNameMethod = Util.getRxRouterInterceptorNameMethod(element.getProject());
         if (isFit(element)) {
             PsiElement targetPsiElement = element;
             LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(

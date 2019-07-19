@@ -11,6 +11,13 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.2</b>
+    <ul>
+        <li>
+        fix bug: the icon on the left of your `router` code will disappear sometimes, this is caused by the cache.
+        I find this bug for a long time!
+        </li>
+    </ul>
     <b>v1.2.1</b>
     <ul>
         <li>
@@ -36,7 +43,7 @@
     ]]>
     </change-notes>
 
-    <version>1.2</version>
+    <version>1.2.2</version>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->

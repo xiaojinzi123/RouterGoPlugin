@@ -31,16 +31,4 @@ public class Constants {
     public static String RouterAnnoPathName = "path";
     public static String RouterAnnoHostAndPathName = "hostAndPath";
 
-    /*public static final String RouterName = "EHiRouter";
-    public static final String RxRouterName = "EHiRxRouter";
-    public static String RouterAnnoClassName = "com.ehi.component.anno.EHiRouterAnno";
-    public static String RouterClassName = "com.ehi.component.impl.EHiRouter";
-    public static String RouterRequestBuilderClassName = "com.ehi.component.impl.EHiRouterRequest.Builder";
-    public static String RouterBuilderClassName = "com.ehi.component.impl.EHiRouter.Builder";
-    public static String RxRouterBuilderClassName = "com.ehi.component.impl.EHiRxRouter.Builder";
-    public static String RxRouterClassName = "com.ehi.component.impl.EHiRxRouter";
-    public static String RouterHostMethodName = "host";
-    public static String RouterAnnoHostName = "host";
-    public static String RouterAnnoPathName = "value";*/
-
 }

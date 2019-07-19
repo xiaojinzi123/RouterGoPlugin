@@ -10,37 +10,25 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseRouterGoMarkerProvider implements LineMarkerProvider {
 
-    protected static PsiMethod routerRequestHostMethod = null;
-    protected static PsiMethod routerHostMethod = null;
-    protected static PsiMethod rxRouterHostMethod = null;
+    protected PsiMethod routerRequestHostMethod = null;
+    protected PsiMethod routerHostMethod = null;
+    protected PsiMethod rxRouterHostMethod = null;
 
-    protected static PsiMethod routerRequestHostAndPathMethod = null;
-    protected static PsiMethod routerHostAndPathMethod = null;
-    protected static PsiMethod rxRouterHostAndPathMethod = null;
+    protected PsiMethod routerRequestHostAndPathMethod = null;
+    protected PsiMethod routerHostAndPathMethod = null;
+    protected PsiMethod rxRouterHostAndPathMethod = null;
 
     @Nullable
     @Override
     public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
 
-        if (routerRequestHostMethod == null) {
-            routerRequestHostMethod = Util.getRouterRequestHostMethod(element.getProject());
-        }
-        if (routerHostMethod == null) {
-            routerHostMethod = Util.getRouterHostMethod(element.getProject());
-        }
-        if (rxRouterHostMethod == null) {
-            rxRouterHostMethod = Util.getRxRouterHostMethod(element.getProject());
-        }
+        routerRequestHostMethod = Util.getRouterRequestHostMethod(element.getProject());
+        routerHostMethod = Util.getRouterHostMethod(element.getProject());
+        rxRouterHostMethod = Util.getRxRouterHostMethod(element.getProject());
 
-        if (routerRequestHostAndPathMethod == null) {
-            routerRequestHostAndPathMethod = Util.getRouterRequestHostAndPathMethod(element.getProject());
-        }
-        if (routerHostAndPathMethod == null) {
-            routerHostAndPathMethod = Util.getRouterHostAndPathMethod(element.getProject());
-        }
-        if (rxRouterHostAndPathMethod == null) {
-            rxRouterHostAndPathMethod = Util.getRxRouterHostAndPathMethod(element.getProject());
-        }
+        routerRequestHostAndPathMethod = Util.getRouterRequestHostAndPathMethod(element.getProject());
+        routerHostAndPathMethod = Util.getRouterHostAndPathMethod(element.getProject());
+        rxRouterHostAndPathMethod = Util.getRxRouterHostAndPathMethod(element.getProject());
 
         return doGetLineMarkerInfo(element);
 

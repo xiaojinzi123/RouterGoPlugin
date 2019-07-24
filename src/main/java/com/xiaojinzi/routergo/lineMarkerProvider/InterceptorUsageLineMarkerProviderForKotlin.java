@@ -9,8 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * 使用 RouterAnno 的地方的显示一个图标,可以展示所有用到这个界面 url 的选项
+ *
+ * @author xiaojinzi
  */
 public class InterceptorUsageLineMarkerProviderForKotlin implements LineMarkerProvider {
 
@@ -26,12 +31,22 @@ public class InterceptorUsageLineMarkerProviderForKotlin implements LineMarkerPr
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                         targetPsiAnnotation,
                         targetPsiAnnotation.getTextRange(),
-                        Constants.INTERCEPTOR_LINK, null,new InterceptorUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
+                        Constants.INTERCEPTOR_LINK, 0, null,
+                        new InterceptorUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
                 );
+                /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
+                        targetPsiAnnotation,
+                        targetPsiAnnotation.getTextRange(),
+                        Constants.INTERCEPTOR_LINK, null,new InterceptorUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
+                );*/
                 return markerInfo;
             }
         }
         return null;
+    }
+
+    @Override
+    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
     }
 
 }

@@ -11,6 +11,12 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.3</b>
+    <ul>
+        <li>
+        Support 3.4 version of Android Studio, The original version is only support 3.5.
+        </li>
+    </ul>
     <b>v1.2.2</b>
     <ul>
         <li>

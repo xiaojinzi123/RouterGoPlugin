@@ -10,8 +10,13 @@ import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * com.intellij.psi.search
+ *
+ * @author xiaojinzi
  */
 public class RouterGoMarkerProvider extends BaseRouterGoMarkerProvider {
 
@@ -38,9 +43,15 @@ public class RouterGoMarkerProvider extends BaseRouterGoMarkerProvider {
                         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                                 targetNavigationPsiElement,
                                 targetNavigationPsiElement.getTextRange(),
-                                Constants.ROUTER_LINK, null,
+                                Constants.ROUTER_LINK, 0, null,
                                 new RouterNavigation(psiReferenceExpression), GutterIconRenderer.Alignment.RIGHT
                         );
+                        /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
+                                targetNavigationPsiElement,
+                                targetNavigationPsiElement.getTextRange(),
+                                Constants.ROUTER_LINK, null,
+                                new RouterNavigation(psiReferenceExpression), GutterIconRenderer.Alignment.RIGHT
+                        );*/
                         return markerInfo;
                     }
                 }
@@ -51,4 +62,7 @@ public class RouterGoMarkerProvider extends BaseRouterGoMarkerProvider {
     }
 
 
+    @Override
+    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+    }
 }

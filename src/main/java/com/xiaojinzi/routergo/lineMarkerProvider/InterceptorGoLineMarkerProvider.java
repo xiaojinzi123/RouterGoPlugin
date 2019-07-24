@@ -1,5 +1,6 @@
 package com.xiaojinzi.routergo.lineMarkerProvider;
 
+import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiReferenceExpression;
@@ -7,10 +8,15 @@ import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * 拦截器的到达目标的实现
  * <p>
  * 这里查找到一个满足跳转的拦截器使用的方式是 <img src="https://xiaojinzi.oss-cn-shanghai.aliyuncs.com/blogImages/20190623170748.png" />
+ *
+ * @author xiaojinzi
  */
 public class InterceptorGoLineMarkerProvider extends BaseInterceptorGoLineMarkerProvider {
 
@@ -50,4 +56,7 @@ public class InterceptorGoLineMarkerProvider extends BaseInterceptorGoLineMarker
         return false;
     }
 
+    @Override
+    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+    }
 }

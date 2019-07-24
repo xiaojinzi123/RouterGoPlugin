@@ -10,6 +10,9 @@ import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @author xiaojinzi
+ */
 public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerProvider {
 
     protected PsiMethod routerInterceptorNameMethod = null;
@@ -25,9 +28,15 @@ public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerP
             LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                     targetPsiElement,
                     targetPsiElement.getTextRange(),
-                    Constants.INTERCEPTOR_LINK, null,
+                    Constants.INTERCEPTOR_LINK, 0, null,
                     new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.LEFT
             );
+            /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
+                    targetPsiElement,
+                    targetPsiElement.getTextRange(),
+                    Constants.INTERCEPTOR_LINK, null,
+                    new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.LEFT
+            );*/
             return markerInfo;
         }
         return null;

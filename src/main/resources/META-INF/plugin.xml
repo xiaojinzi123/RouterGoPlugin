@@ -11,6 +11,12 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.4&v1.2.5</b>
+    <ul>
+        <li>
+            fix name of RxNavigator
+        </li>
+    </ul>
     <b>v1.2.3</b>
     <ul>
         <li>
@@ -49,7 +55,7 @@
     ]]>
     </change-notes>
 
-    <version>1.2.2</version>
+    <version>1.2.5</version>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -77,6 +83,6 @@
 
     <depends>org.jetbrains.android</depends>
     <depends>org.intellij.groovy</depends>
-    <depends optional="true">org.jetbrains.kotlin</depends>
+    <depends optional="true" config-file="">org.jetbrains.kotlin</depends>
 
 </idea-plugin>

@@ -21,7 +21,6 @@ public abstract class BaseRouterGoMarkerProvider implements LineMarkerProvider {
     @Nullable
     @Override
     public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
-
         routerRequestHostMethod = Util.getRouterRequestHostMethod(element.getProject());
         routerHostMethod = Util.getRouterHostMethod(element.getProject());
         rxRouterHostMethod = Util.getRxRouterHostMethod(element.getProject());

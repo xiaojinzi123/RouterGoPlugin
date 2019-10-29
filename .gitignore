@@ -5,9 +5,13 @@
 
 # Log file
 *.log
+/.gradle
+/out
+/.gradle
 
 # BlueJ files
 *.ctxt
+.idea/sonarlint/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

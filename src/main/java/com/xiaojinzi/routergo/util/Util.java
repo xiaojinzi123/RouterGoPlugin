@@ -37,7 +37,6 @@ public class Util {
         List<PsiReference> referenceMethodList = new ArrayList<>();
         GlobalSearchScope allScope = ProjectScope.getAllScope(project);
         JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
-
         PsiClass routerBuilderClass = javaPsiFacade.findClass(Constants.RouterBuilderClassName, allScope);
         // 这个可能为空
         PsiClass rxRouterBuilderClass = javaPsiFacade.findClass(Constants.RxRouterBuilderClassName, allScope);
@@ -382,6 +381,10 @@ public class Util {
             // ignore
         }
 
+        if (info.isValid()) {
+            return info;
+        }
+
         // 尝试获取 hostAndPath
         try {
             if (psiReferenceExpression.getLastChild() instanceof PsiIdentifier && Constants.RouterHostAndPathMethodName.equals(psiReferenceExpression.getLastChild().getText())) {
@@ -409,7 +412,14 @@ public class Util {
         String value = null;
         if (psiElement instanceof PsiReferenceExpression) {
             try {
-                value = (String) ((PsiLiteralExpression) ((PsiField) ((PsiReferenceExpression) psiElement).resolve()).getInitializer()).getValue();
+                // 引用的类型
+                PsiElement targetPsiElement = ((PsiReferenceExpression) psiElement).resolve();
+                if (targetPsiElement instanceof PsiLiteralExpression) {
+                    value = (String) ((PsiLiteralExpression) ((PsiField) targetPsiElement).getInitializer()).getValue();
+                } else if (targetPsiElement instanceof PsiField) { // 如果是一个字段, 那么看下字段的值是啥类型的
+                    PsiElement valuePsiElement = targetPsiElement.getLastChild().getPrevSibling();
+                    value = getStringValue(valuePsiElement);
+                }
                 return value;
             } catch (Exception ignore) {
                 // ignore

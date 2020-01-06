@@ -13,11 +13,14 @@ public class Constants {
 
     public static Icon INTERCEPTOR_LINK = IconLoader.getIcon("interceptor_link.png");
 
+    public static Icon FRAGMENT_LINK = IconLoader.getIcon("fragment.png");
+
     public static String InterceptorAnnoClassName = "com.xiaojinzi.component.anno.InterceptorAnno";
     public static String InterceptorAnnoClassShortName = "InterceptorAnno";
     public static String RouterAnnoClassName = "com.xiaojinzi.component.anno.RouterAnno";
     public static String RouterAnnoClassShortName = "RouterAnno";
     public static String RouterClassName = "com.xiaojinzi.component.impl.Router";
+    public static String RouterWithMethodName = "with";
     public static String RouterRequestBuilderClassName = "com.xiaojinzi.component.impl.RouterRequest.Builder";
     public static String RouterBuilderClassName = "com.xiaojinzi.component.impl.Navigator";
     public static String RxRouterBuilderClassName = "com.xiaojinzi.component.impl.RxRouter.RxNavigator";

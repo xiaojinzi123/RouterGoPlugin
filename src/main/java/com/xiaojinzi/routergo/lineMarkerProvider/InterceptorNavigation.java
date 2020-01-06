@@ -3,6 +3,7 @@ package com.xiaojinzi.routergo.lineMarkerProvider;
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
+import com.intellij.pom.Navigatable;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -86,8 +87,8 @@ public class InterceptorNavigation implements GutterIconNavigationHandler {
             }
         }
 
-        if (targetAnno != null && targetAnno.canNavigate()) {
-            targetAnno.navigate(true);
+        if (targetAnno != null && targetAnno instanceof Navigatable) {
+            ((Navigatable) targetAnno).navigate(true);
         }
 
     }

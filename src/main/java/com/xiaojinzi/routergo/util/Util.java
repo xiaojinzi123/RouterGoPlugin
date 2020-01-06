@@ -24,6 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * GlobalSearchScope allScope = ProjectScope.getAllScope(psiElement.getProject());
+ * JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(psiElement.getProject());
+ *
+ * PsiClass routerClass = javaPsiFacade.findClass(Constants.RouterClassName, allScope);
+ * PsiMethod psiWithMethodRouter = (PsiMethod) routerClass.findMethodsByName(Constants.RouterWithMethodName)[0];
+ */
 public class Util {
 
     /**

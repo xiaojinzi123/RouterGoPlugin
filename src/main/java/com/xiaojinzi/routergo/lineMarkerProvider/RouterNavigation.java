@@ -3,6 +3,7 @@ package com.xiaojinzi.routergo.lineMarkerProvider;
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
+import com.intellij.pom.Navigatable;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -19,7 +20,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 
 public class RouterNavigation implements GutterIconNavigationHandler {
 
@@ -94,8 +94,8 @@ public class RouterNavigation implements GutterIconNavigationHandler {
             }
         }
 
-        if (targetAnno != null && targetAnno.canNavigate()) {
-            targetAnno.navigate(true);
+        if (targetAnno != null && targetAnno instanceof Navigatable) {
+            ((Navigatable) targetAnno).navigate(true);
         }
 
     }

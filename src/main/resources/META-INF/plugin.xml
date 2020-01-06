@@ -11,6 +11,12 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.6-as3.5</b>
+    <ul>
+        <li>
+            fix a bug about getting String value
+        </li>
+    </ul>
     <b>v1.2.4&v1.2.5</b>
     <ul>
         <li>
@@ -55,7 +61,7 @@
     ]]>
     </change-notes>
 
-    <version>1.2.5</version>
+    <version>1.2.6</version>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -81,8 +87,12 @@
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorUsageLineMarkerProviderForKotlin"/>
     </extensions>
 
+    <idea-version since-build="183" until-build="183.*"/>
+
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.android</depends>
     <depends>org.intellij.groovy</depends>
-    <depends optional="true" config-file="">org.jetbrains.kotlin</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
 </idea-plugin>

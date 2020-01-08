@@ -23,6 +23,7 @@ intellij {
     pluginName 'RouterGo'
     // 3.5
     // version 'IC-191.5109.14'
+    // 3.6
     version 'IC-192.7142.36'
     // 最后的 kotlin 的依赖是从 idea plugin 中搜索 kotlin 就可以了
     plugins 'android',

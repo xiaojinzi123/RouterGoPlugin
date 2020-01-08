@@ -55,30 +55,30 @@ public class RouterNavigation implements GutterIconNavigationHandler {
         GlobalSearchScope allScope = ProjectScope.getAllScope(elt.getProject());
         JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(elt.getProject());
         // 注解类@RouterAnno(.....)
-        PsiClass serviceAnnotation = javaPsiFacade.findClass(Constants.RouterAnnoClassName, allScope);
-        if (serviceAnnotation == null) {
+        PsiClass routerAnnotation = javaPsiFacade.findClass(Constants.RouterAnnoClassName, allScope);
+        if (routerAnnotation == null) {
             return;
         }
 
         List<PsiAnnotation> psiAnnotationList = new ArrayList<>();
 
         Collection<PsiClass> routerActivities = AnnotatedElementsSearch
-                .searchPsiClasses(serviceAnnotation, allScope)
+                .searchPsiClasses(routerAnnotation, allScope)
                 .findAll();
         Collection<PsiMethod> routerStaticMethods = AnnotatedElementsSearch
-                .searchPsiMethods(serviceAnnotation, allScope)
+                .searchPsiMethods(routerAnnotation, allScope)
                 .findAll();
 
         for (PsiClass routerClass : routerActivities) {
             // Activity上的注解
-            PsiAnnotation routerClassAnnotation = routerClass.getAnnotation(serviceAnnotation.getQualifiedName());
+            PsiAnnotation routerClassAnnotation = routerClass.getAnnotation(routerAnnotation.getQualifiedName());
             if (routerClassAnnotation != null) {
                 psiAnnotationList.add(routerClassAnnotation);
             }
         }
         for (PsiMethod routerStaticMethod : routerStaticMethods) {
             // 静态方法上的注解
-            PsiAnnotation routerStaticMethodAnnotation = routerStaticMethod.getAnnotation(serviceAnnotation.getQualifiedName());
+            PsiAnnotation routerStaticMethodAnnotation = routerStaticMethod.getAnnotation(routerAnnotation.getQualifiedName());
             if (routerStaticMethodAnnotation != null) {
                 psiAnnotationList.add(routerStaticMethodAnnotation);
             }

@@ -91,10 +91,8 @@ public class KtUtil {
 
     /**
      * 获取一个元素引用的目标方法对象
-     *
-     * @param psiElement
-     * @return
      */
+    @Nullable
     public static PsiMethod getTargetRefrenceMethod(@NotNull PsiElement psiElement) {
         PsiReference[] references = psiElement.getReferences();
         for (PsiReference reference : references) {

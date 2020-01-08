@@ -24,7 +24,7 @@ public class RouterGoMarkerProviderForKotlin extends BaseRouterGoMarkerProvider 
 
         if (element instanceof KtSimpleNameExpression) {
             KtSimpleNameExpression ktSimpleNameExpression = (KtSimpleNameExpression) element;
-            PsiMethod targetPsiMethod = KtUtil.getTargetRefrenceMethod(element);
+            PsiMethod targetPsiMethod = KtUtil.getTargetRefrenceMethod(ktSimpleNameExpression);
             if (targetPsiMethod != null) {
                 boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
                         targetPsiMethod.equals(routerHostMethod) ||
@@ -38,13 +38,11 @@ public class RouterGoMarkerProviderForKotlin extends BaseRouterGoMarkerProvider 
                         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                                 targetPsiElement,
                                 targetPsiElement.getTextRange(),
-                                Constants.ROUTER_LINK, 0, null, new RouterNavigation(ktSimpleNameExpression), GutterIconRenderer.Alignment.RIGHT
+                                Constants.ROUTER,
+                                Constants.TOOLTIP_PROVIDER_FUNCTION_FOR_ROUTER,
+                                new RouterNavigation(ktSimpleNameExpression),
+                                GutterIconRenderer.Alignment.RIGHT
                         );
-                        /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                                targetPsiElement,
-                                targetPsiElement.getTextRange(),
-                                Constants.ROUTER_LINK, null, new RouterNavigation(ktSimpleNameExpression), GutterIconRenderer.Alignment.RIGHT
-                        );*/
                         return markerInfo;
                     }
                 }

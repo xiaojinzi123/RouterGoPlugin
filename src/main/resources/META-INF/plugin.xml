@@ -66,6 +66,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.FragmentGoLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoInRouterAnnoLineMarkerProvider"/>
@@ -75,6 +77,9 @@
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorGoLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterUsageLineMarkerProvider"/>
+
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.FragmentGoLineMarkerProviderForKotlin"/>
         <codeInsight.lineMarkerProvider language="kotlin"
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.RouterGoMarkerProviderForKotlin"/>
         <codeInsight.lineMarkerProvider language="kotlin"
@@ -87,7 +92,7 @@
                                         implementationClass="com.xiaojinzi.routergo.lineMarkerProvider.InterceptorUsageLineMarkerProviderForKotlin"/>
     </extensions>
 
-    <idea-version since-build="183" until-build="183.*"/>
+    <!--<idea-version since-build="183" until-build="183.*"/>-->
 
     <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.modules.platform</depends>

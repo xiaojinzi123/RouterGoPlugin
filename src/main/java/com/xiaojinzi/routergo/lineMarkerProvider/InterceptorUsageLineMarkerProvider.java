@@ -31,14 +31,11 @@ public class InterceptorUsageLineMarkerProvider implements LineMarkerProvider {
             LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                     targetPsiElement,
                     targetPsiElement.getTextRange(),
-                    Constants.INTERCEPTOR_LINK, 0, null,
-                    new InterceptorUsageNavigation(interceptorAnno), GutterIconRenderer.Alignment.RIGHT
+                    Constants.INTERCEPTOR_USAGE_FIND,
+                    null,
+                    new InterceptorUsageNavigation(interceptorAnno),
+                    GutterIconRenderer.Alignment.RIGHT
             );
-            /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                    targetPsiElement,
-                    targetPsiElement.getTextRange(),
-                    Constants.INTERCEPTOR_LINK, null,new InterceptorUsageNavigation(interceptorAnno), GutterIconRenderer.Alignment.RIGHT
-            );*/
             return markerInfo;
         }
         return null;

@@ -33,15 +33,11 @@ public class RouterUsageLineMarkerProviderForKotlin implements LineMarkerProvide
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                         targetPsiAnnotation,
                         targetPsiAnnotation.getTextRange(),
-                        Constants.ROUTER_LINK, 0, null,
-                        new RouterUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
+                        Constants.ROUTER_USAGE_FIND,
+                        null,
+                        new RouterUsageNavigation(targetPsiAnnotation),
+                        GutterIconRenderer.Alignment.RIGHT
                 );
-                /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                        targetPsiAnnotation,
-                        targetPsiAnnotation.getTextRange(),
-                        Constants.ROUTER_LINK, null,
-                        new RouterUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
-                );*/
                 return markerInfo;
             }
         }

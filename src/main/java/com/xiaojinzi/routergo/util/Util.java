@@ -1,11 +1,13 @@
 package com.xiaojinzi.routergo.util;
 
+import com.intellij.lang.jvm.JvmMethod;
 import com.intellij.lang.jvm.annotation.JvmAnnotationArrayValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
@@ -15,7 +17,10 @@ import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.bean.InterceptorAnnoInfo;
 import com.xiaojinzi.routergo.bean.RouterInfo;
 import org.jetbrains.android.dom.manifest.Application;
+import org.jetbrains.android.dom.manifest.Manifest;
 import org.jetbrains.android.facet.AndroidFacet;
+import org.jetbrains.android.facet.AndroidRootUtil;
+import org.jetbrains.android.util.AndroidUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -193,8 +198,10 @@ public class Util {
         try {
             // 找到对应的 module
             Module module = ModuleUtil.findModuleForPsiElement(psiElement);
-            // 这里读取GroovyFile文件中的 host
-            Application manifestApplication = AndroidFacet.getInstance(module).getManifest().getApplication();
+            AndroidFacet androidFacet = AndroidFacet.getInstance(module);
+            VirtualFile manifestFile = AndroidRootUtil.getPrimaryManifestFile(androidFacet);
+            final Manifest manifest = AndroidUtils.loadDomElement(androidFacet.getModule(), manifestFile, Manifest.class);
+            Application manifestApplication = manifest.getApplication();
             if (manifestApplication.getMetaDatas() != null) {
                 List<Object> metaDatas = new ArrayList<>(manifestApplication.getMetaDatas());
                 for (Object metaData : metaDatas) {
@@ -237,11 +244,56 @@ public class Util {
     }
 
     @Nullable
+    public static PsiMethod getRouterWithFragmentMethod(@NotNull Project project) {
+        try {
+            GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+            JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+            PsiClass routerClass = javaPsiFacade.findClass(Constants.RouterClassName, allScope);
+            PsiClass fragmentNavigatorClass = javaPsiFacade.findClass(Constants.FragmentNavigatorClassName, allScope);
+            PsiMethod[] psiMethods = (PsiMethod[]) routerClass.findMethodsByName(Constants.RouterWithMethodName);
+            for (int i = 0; i < psiMethods.length; i++) {
+                PsiMethod psiMethod = psiMethods[i];
+                PsiType returnType = psiMethod.getReturnType();
+                if (returnType instanceof PsiClassType) {
+                    PsiClass targetReturnClass = ((PsiClassType) returnType).resolve();
+                    if (fragmentNavigatorClass.equals(targetReturnClass)) {
+                        return psiMethod;
+                    }
+                }
+            }
+        } catch (Exception ignore) {
+        }
+        return null;
+    }
+
+    @Nullable
+    public static PsiMethod getRxRouterWithFragmentMethod(@NotNull Project project) {
+        try {
+            GlobalSearchScope allScope = ProjectScope.getAllScope(project);
+            JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+            PsiClass rxRouterClass = javaPsiFacade.findClass(Constants.RxRouterClassName, allScope);
+            PsiClass fragmentNavigatorClass = javaPsiFacade.findClass(Constants.FragmentRxNavigatorClassName, allScope);
+            PsiMethod[] psiMethods = (PsiMethod[]) rxRouterClass.findMethodsByName(Constants.RxRouterWithMethodName);
+            for (int i = 0; i < psiMethods.length; i++) {
+                PsiMethod psiMethod = psiMethods[i];
+                PsiType returnType = psiMethod.getReturnType();
+                if (returnType instanceof PsiClassType) {
+                    PsiClass targetReturnClass = ((PsiClassType) returnType).resolve();
+                    if (fragmentNavigatorClass.equals(targetReturnClass)) {
+                        return psiMethod;
+                    }
+                }
+            }
+        } catch (Exception ignore) {
+        }
+        return null;
+    }
+
+    @Nullable
     public static PsiMethod getRouterRequestHostMethod(@NotNull Project project) {
         try {
             GlobalSearchScope allScope = ProjectScope.getAllScope(project);
             JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
-            // 注解类@RouterAnno(.....)
             PsiClass routerRequestBuilderClass = javaPsiFacade.findClass(Constants.RouterRequestBuilderClassName, allScope);
             return (PsiMethod) routerRequestBuilderClass.findMethodsByName(Constants.RouterHostMethodName)[0];
         } catch (Exception ignore) {

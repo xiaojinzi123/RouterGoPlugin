@@ -43,15 +43,10 @@ public class RouterGoMarkerProvider extends BaseRouterGoMarkerProvider {
                         LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                                 targetNavigationPsiElement,
                                 targetNavigationPsiElement.getTextRange(),
-                                Constants.ROUTER_LINK, 0, null,
+                                Constants.ROUTER,
+                                Constants.TOOLTIP_PROVIDER_FUNCTION_FOR_ROUTER,
                                 new RouterNavigation(psiReferenceExpression), GutterIconRenderer.Alignment.RIGHT
                         );
-                        /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                                targetNavigationPsiElement,
-                                targetNavigationPsiElement.getTextRange(),
-                                Constants.ROUTER_LINK, null,
-                                new RouterNavigation(psiReferenceExpression), GutterIconRenderer.Alignment.RIGHT
-                        );*/
                         return markerInfo;
                     }
                 }

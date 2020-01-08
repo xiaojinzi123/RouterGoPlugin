@@ -28,15 +28,10 @@ public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerP
             LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                     targetPsiElement,
                     targetPsiElement.getTextRange(),
-                    Constants.INTERCEPTOR_LINK, 0, null,
+                    Constants.INTERCEPTOR,
+                    null,
                     new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.LEFT
             );
-            /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                    targetPsiElement,
-                    targetPsiElement.getTextRange(),
-                    Constants.INTERCEPTOR_LINK, null,
-                    new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.LEFT
-            );*/
             return markerInfo;
         }
         return null;

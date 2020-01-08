@@ -31,14 +31,10 @@ public class InterceptorUsageLineMarkerProviderForKotlin implements LineMarkerPr
                 LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
                         targetPsiAnnotation,
                         targetPsiAnnotation.getTextRange(),
-                        Constants.INTERCEPTOR_LINK, 0, null,
+                        Constants.INTERCEPTOR_USAGE_FIND,
+                        null,
                         new InterceptorUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
                 );
-                /*LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(
-                        targetPsiAnnotation,
-                        targetPsiAnnotation.getTextRange(),
-                        Constants.INTERCEPTOR_LINK, null,new InterceptorUsageNavigation(targetPsiAnnotation), GutterIconRenderer.Alignment.RIGHT
-                );*/
                 return markerInfo;
             }
         }

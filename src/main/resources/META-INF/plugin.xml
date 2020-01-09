@@ -11,10 +11,13 @@
     </description>
 
     <change-notes><![CDATA[
-    <b>v1.2.6-as3.5</b>
+    <b>v1.2.6</b>
     <ul>
         <li>
-            fix a bug about getting String value
+            support AS 3.6+
+        </li>
+        <li>
+            support Fragment navigate
         </li>
     </ul>
     <b>v1.2.4&v1.2.5</b>
@@ -60,8 +63,6 @@
     </ul>
     ]]>
     </change-notes>
-
-    <version>1.2.6</version>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->

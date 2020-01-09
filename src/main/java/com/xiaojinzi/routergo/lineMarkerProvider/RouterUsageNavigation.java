@@ -18,12 +18,12 @@ import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.kotlin.idea.references.KtSimpleNameReference;
 import org.jetbrains.kotlin.psi.KtAnnotationEntry;
+import org.jetbrains.kotlin.psi.KtClass;
 
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class RouterUsageNavigation implements GutterIconNavigationHandler {
 
@@ -129,6 +129,13 @@ public class RouterUsageNavigation implements GutterIconNavigationHandler {
                 ((Navigatable) targetPsiElement).navigate(true);
             }
         } else if (referenceExpressionListResultList.size() > 1) {
+
+            referenceExpressionListResultList =
+                    new SortHelper<>(
+                            referenceExpressionListResultList,
+                            routerAnnoInfo -> routerAnnoInfo.psiElement
+                    ).getSortedList();
+
             List<GotoRelatedItem> gotoRelatedItemList = new ArrayList<>();
             for (RouterAnnoInfo routerAnnoInfo : referenceExpressionListResultList) {
                 gotoRelatedItemList.add(new GotoRelatedItem(routerAnnoInfo.psiElement));

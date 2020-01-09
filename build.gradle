@@ -33,6 +33,12 @@ intellij {
             'Kotlin'
 }
 
+runIde {
+    // Absolute path to installed target v3.5 Android Studio to use as IDE Development Instance
+    // The "Contents" directory is macOS specific.
+    // ideDirectory '/Applications/Android Studio 3.6 RC.app/Contents'
+}
+
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 
 group "com.xiaojinzi.routergo"

@@ -30,7 +30,7 @@ public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerP
                     targetPsiElement.getTextRange(),
                     Constants.INTERCEPTOR,
                     null,
-                    new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.LEFT
+                    new InterceptorNavigation(targetPsiElement), GutterIconRenderer.Alignment.RIGHT
             );
             return markerInfo;
         }

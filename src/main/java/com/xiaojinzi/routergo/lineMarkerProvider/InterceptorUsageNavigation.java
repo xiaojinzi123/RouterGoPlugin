@@ -112,6 +112,11 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
                 ((Navigatable) targetPsiElement).navigate(true);
             }
         } else if (interceptorInfoList.size() > 1) {
+            interceptorInfoList =
+                    new SortHelper<>(
+                            interceptorInfoList,
+                            item -> item.psiElement
+                    ).getSortedList();
             List<GotoRelatedItem> gotoRelatedItemList = new ArrayList<>();
             for (InterceptorInfo interceptorInfo : interceptorInfoList) {
                 gotoRelatedItemList.add(new GotoRelatedItem(interceptorInfo.psiElement));

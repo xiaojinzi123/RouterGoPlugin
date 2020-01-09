@@ -116,16 +116,22 @@ public class Util {
     public static List<String> getInterceptorNamesFromRouterAnno(@NotNull PsiAnnotation psiAnnotation) {
         try {
             List<String> result = new ArrayList<>();
-            JvmAnnotationArrayValue psiAnnotationArrayValue = (JvmAnnotationArrayValue) psiAnnotation.findAttribute(Constants.RouterAnnoInterceptorName).getAttributeValue();
-            List<JvmAnnotationAttributeValue> values = psiAnnotationArrayValue.getValues();
-            for (JvmAnnotationAttributeValue value : values) {
-                if (value instanceof JvmAnnotationConstantValue) {
-                    result.add((String) ((JvmAnnotationConstantValue) value).getConstantValue());
+            JvmAnnotationAttributeValue attributeValue = psiAnnotation.findAttribute(Constants.RouterAnnoInterceptorName).getAttributeValue();
+            if (attributeValue instanceof JvmAnnotationConstantValue) {
+                result.add((String)((JvmAnnotationConstantValue)attributeValue).getConstantValue());
+            }else {
+                JvmAnnotationArrayValue psiAnnotationArrayValue = (JvmAnnotationArrayValue) attributeValue;
+                List<JvmAnnotationAttributeValue> values = psiAnnotationArrayValue.getValues();
+                for (JvmAnnotationAttributeValue value : values) {
+                    if (value instanceof JvmAnnotationConstantValue) {
+                        result.add((String) ((JvmAnnotationConstantValue) value).getConstantValue());
+                    }
                 }
             }
             return result;
         } catch (Exception ignore) {
             // ignore
+            System.err.println("getInterceptorNamesFromRouterAnno 失败：" + ignore.getMessage());
         }
         return Collections.emptyList();
     }

@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 拦截器的使用查询,有以下几个方面
@@ -81,7 +82,7 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
                 interceptorInfo.interceptorNames = KtUtil.getInterceptorNames((KtSimpleNameReference)reference);
             }
             if (interceptorInfo.interceptorNames != null) {
-                interceptorInfoList.add(interceptorInfo);
+                // interceptorInfoList.add(interceptorInfo);
             }
         }
 
@@ -92,6 +93,11 @@ public class InterceptorUsageNavigation implements GutterIconNavigationHandler {
             interceptorInfo.interceptorNames = Util.getInterceptorNamesFromRouterAnno(psiAnnotation);
             interceptorInfoList.add(interceptorInfo);
         }
+
+        // 先过滤一波
+        interceptorInfoList = interceptorInfoList.stream()
+                .filter(item -> item.interceptorNames != null && !item.interceptorNames.isEmpty())
+                .collect(Collectors.toList());
 
         outter:
         for (int i = interceptorInfoList.size() - 1; i >= 0; i--) {

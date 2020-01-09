@@ -131,7 +131,7 @@ public class Util {
             return result;
         } catch (Exception ignore) {
             // ignore
-            System.err.println("getInterceptorNamesFromRouterAnno 失败：" + ignore.getMessage());
+            // System.err.println("getInterceptorNamesFromRouterAnno 失败：" + ignore.getMessage());
         }
         return Collections.emptyList();
     }

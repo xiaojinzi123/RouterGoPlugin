@@ -12,3 +12,17 @@
 
 ### AndroidStudio中下载安装
 在 `AndroidStudio` 中搜索插件 `RouterGo` 就可以搜索到,下载安装即可
+
+### 在每个模块的清单文件中. 配置 host 信息
+
+```
+<application>
+        <meta-data
+            android:name="host_component1"
+            android:value="component1" />
+        ......  
+</application>
+```
+
+name 必须是 host_为前缀的. name 的后缀我建议使用模块名字. 这样不会和其他模块的 name 冲突
+value 是模块的名字

@@ -87,7 +87,7 @@ public class RouterUsageNavigation implements GutterIconNavigationHandler {
 
         referenceList = null;
 
-        Set<RouterAnnoInfo> referenceExpressionListResultSet = new HashSet<>();
+        Set<RouterAnnoInfo> routerAnnoInfos = new HashSet<>();
 
         for (PsiReferenceExpression psiReferenceExpression : referenceExpressionList) {
             RouterInfo routerInfo = Util.getRouterInfoFromPsiReferenceExpression(psiReferenceExpression);
@@ -97,7 +97,7 @@ public class RouterUsageNavigation implements GutterIconNavigationHandler {
             }
             if (routerInfo != null) {
                 routerAnnoInfo.psiElement = psiReferenceExpression;
-                referenceExpressionListResultSet.add(routerAnnoInfo);
+                routerAnnoInfos.add(routerAnnoInfo);
             }
         }
 
@@ -109,11 +109,11 @@ public class RouterUsageNavigation implements GutterIconNavigationHandler {
             }
             if (routerInfo != null) {
                 routerAnnoInfo.psiElement = ktSimpleNameReference.getElement();
-                referenceExpressionListResultSet.add(routerAnnoInfo);
+                routerAnnoInfos.add(routerAnnoInfo);
             }
         }
 
-        List<RouterAnnoInfo> referenceExpressionListResultList = new ArrayList<>(referenceExpressionListResultSet);
+        List<RouterAnnoInfo> referenceExpressionListResultList = new ArrayList<>(routerAnnoInfos);
 
         // 过滤 host 和 path 不一样的
         for (int i = referenceExpressionListResultList.size() - 1; i >= 0; i--) {

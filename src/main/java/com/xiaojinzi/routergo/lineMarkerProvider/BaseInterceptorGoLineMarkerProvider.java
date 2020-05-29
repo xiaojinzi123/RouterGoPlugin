@@ -41,7 +41,6 @@ public abstract class BaseInterceptorGoLineMarkerProvider implements LineMarkerP
      * 满足跳转的这个 element 必须是一个字符串表达式
      *
      * @param element 如果返回 true,必须是一个字符串表达式
-     * @return
      */
     public abstract boolean isFit(@NotNull PsiElement element);
 

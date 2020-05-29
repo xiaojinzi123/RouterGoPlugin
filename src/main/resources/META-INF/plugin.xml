@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.xiaojinzi.routergo</id>
     <name>RouterGo</name>
-    <vendor email="cxj0xiaojinzi@gmail.com" url="https://github.com/xiaojinzi123/RouterGoPlugin">xiaojinzi</vendor>
+    <vendor email="cxj0xiaojinzi@gmail.com" url="https://github.com/xiaojinzi123/Component">xiaojinzi</vendor>
 
     <description><![CDATA[
     when you use <a href='https://github.com/xiaojinzi123/Component' >Router</a> for Component in Android.
@@ -11,6 +11,12 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.7</b>
+    <ul>
+        <li>
+            support AS 4.0+
+        </li>
+    </ul>
     <b>v1.2.6</b>
     <ul>
         <li>

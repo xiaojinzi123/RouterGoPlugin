@@ -29,12 +29,8 @@ public class RouterGoMarkerProvider extends BaseRouterGoMarkerProvider {
             PsiElement targetPsiElement = psiReferenceExpression.resolve();
             if (targetPsiElement instanceof PsiMethod) {
                 PsiMethod targetPsiMethod = (PsiMethod) targetPsiElement;
-                boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
-                        targetPsiMethod.equals(routerHostMethod) ||
-                        targetPsiMethod.equals(rxRouterHostMethod);
-                boolean isHostAndPathMethod = targetPsiMethod.equals(routerRequestHostAndPathMethod) ||
-                        targetPsiMethod.equals(routerHostAndPathMethod) ||
-                        targetPsiMethod.equals(rxRouterHostAndPathMethod);
+                boolean isHostMethod = Util.isHostMethod(targetPsiMethod.getProject(), targetPsiMethod);
+                boolean isHostAndPathMethod = Util.isHostAndPathMethod(targetPsiMethod.getProject(), targetPsiMethod);
                 // 如果是 host 方法或者是 hostAndPath 方法
                 if (isHostMethod || isHostAndPathMethod) {
                     // 如果是一个有 host 和 path 方法 或者 hostAndPath 方法使用的

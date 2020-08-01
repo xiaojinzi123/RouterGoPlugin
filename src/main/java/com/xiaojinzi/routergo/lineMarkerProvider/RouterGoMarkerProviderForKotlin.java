@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.xiaojinzi.routergo.Constants;
 import com.xiaojinzi.routergo.util.KtUtil;
+import com.xiaojinzi.routergo.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
@@ -26,12 +27,8 @@ public class RouterGoMarkerProviderForKotlin extends BaseRouterGoMarkerProvider 
             KtSimpleNameExpression ktSimpleNameExpression = (KtSimpleNameExpression) element;
             PsiMethod targetPsiMethod = KtUtil.getTargetRefrenceMethod(ktSimpleNameExpression);
             if (targetPsiMethod != null) {
-                boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
-                        targetPsiMethod.equals(routerHostMethod) ||
-                        targetPsiMethod.equals(rxRouterHostMethod);
-                boolean isHostAndPathMethod = targetPsiMethod.equals(routerRequestHostAndPathMethod) ||
-                        targetPsiMethod.equals(routerHostAndPathMethod) ||
-                        targetPsiMethod.equals(rxRouterHostAndPathMethod);
+                boolean isHostMethod = Util.isHostMethod(targetPsiMethod.getProject(), targetPsiMethod);
+                boolean isHostAndPathMethod = Util.isHostAndPathMethod(targetPsiMethod.getProject(), targetPsiMethod);
                 if (isHostMethod || isHostAndPathMethod) {
                     if (KtUtil.getRouterInfoFromKtNameReferenceExpression(ktSimpleNameExpression) != null) {
                         PsiElement targetPsiElement = ktSimpleNameExpression;

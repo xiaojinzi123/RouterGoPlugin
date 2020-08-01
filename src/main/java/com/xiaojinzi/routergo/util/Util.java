@@ -108,9 +108,6 @@ public class Util {
 
     /**
      * 从 RouterAnno 注解中获取 interceptorNames 属性的集合
-     *
-     * @param psiAnnotation
-     * @return
      */
     @NotNull
     public static List<String> getInterceptorNamesFromRouterAnno(@NotNull PsiAnnotation psiAnnotation) {
@@ -423,6 +420,26 @@ public class Util {
         return null;
     }
 
+    public static boolean isHostMethod(@NotNull Project project, @NotNull PsiMethod targetPsiMethod) {
+        PsiMethod routerRequestHostMethod = Util.getRouterRequestHostMethod(project);
+        PsiMethod routerHostMethod = Util.getRouterHostMethod(project);
+        PsiMethod rxRouterHostMethod = Util.getRxRouterHostMethod(project);
+        boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
+                targetPsiMethod.equals(routerHostMethod) ||
+                targetPsiMethod.equals(rxRouterHostMethod);
+        return isHostMethod;
+    }
+
+    public static boolean isHostAndPathMethod(@NotNull Project project, @NotNull PsiMethod targetPsiMethod) {
+        PsiMethod routerRequestHostAndPathMethod = Util.getRouterRequestHostAndPathMethod(project);
+        PsiMethod routerHostAndPathMethod = Util.getRouterHostAndPathMethod(project);
+        PsiMethod rxRouterHostAndPathMethod = Util.getRxRouterHostAndPathMethod(project);
+        boolean isHostAndPathMethod = targetPsiMethod.equals(routerRequestHostAndPathMethod) ||
+                targetPsiMethod.equals(routerHostAndPathMethod) ||
+                targetPsiMethod.equals(rxRouterHostAndPathMethod);
+        return isHostAndPathMethod;
+    }
+
     public static boolean isRouteAble(@NotNull PsiReferenceExpression psiReferenceExpression) {
         return getRouterInfoFromPsiReferenceExpression(psiReferenceExpression) == null ? false : true;
     }
@@ -435,35 +452,53 @@ public class Util {
      */
     @Nullable
     public static RouterInfo getRouterInfoFromPsiReferenceExpression(@NotNull PsiReferenceExpression psiReferenceExpression) {
-        RouterInfo info = new RouterInfo();
-        // 尝试获取 host() 和 path() 方法写的参数
-        try {
-            PsiElement psiHostElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
-            PsiElement psiPathElement = psiReferenceExpression.getParent().getParent().getParent().getChildren()[1].getChildren()[1];
-            info.host = getStringValue(psiHostElement);
-            info.path = getStringValue(psiPathElement);
-        } catch (Exception ignore) {
-            // ignore
-        }
-
-        if (info.isValid()) {
-            return info;
-        }
-
-        // 尝试获取 hostAndPath
-        try {
-            if (psiReferenceExpression.getLastChild() instanceof PsiIdentifier && Constants.RouterHostAndPathMethodName.equals(psiReferenceExpression.getLastChild().getText())) {
-                PsiElement psiHostAndPathElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
-                info.setHostAndPath(getStringValue(psiHostAndPathElement));
-            }
-        } catch (Exception ignore) {
-            // ignore
-        }
-        if (info.isValid()) {
-            return info;
-        } else {
+        PsiElement psiElement = psiReferenceExpression.resolve();
+        if ((psiElement instanceof PsiMethod) == false) {
             return null;
         }
+        PsiMethod psiMethod = (PsiMethod) psiElement;
+        // 声明返回值
+        RouterInfo info = new RouterInfo();
+        boolean isHostMethod = Util.isHostMethod(psiElement.getProject(), psiMethod);
+        if (isHostMethod) {
+            // 尝试获取 host() 和 path() 方法写的参数
+            try {
+                PsiElement psiHostElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
+                PsiElement psiPathElement = psiReferenceExpression.getParent().getParent().getParent().getChildren()[1].getChildren()[1];
+                info.host = getStringValue(psiHostElement);
+                info.path = getStringValue(psiPathElement);
+            } catch (Exception ignore) {
+                // ignore
+            }
+            if (info.isValid()) {
+                return info;
+            } else {
+                return null;
+            }
+        }
+
+        boolean isHostAndPathMethod = Util.isHostAndPathMethod(psiElement.getProject(), psiMethod);
+        if (isHostAndPathMethod) {
+            // 尝试获取 hostAndPath
+            try {
+                if (psiReferenceExpression.getLastChild() instanceof PsiIdentifier &&
+                        Constants.RouterHostAndPathMethodName.equals(psiReferenceExpression.getLastChild().getText())) {
+                    PsiElement psiHostAndPathElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
+                    info.setHostAndPath(getStringValue(psiHostAndPathElement));
+                }
+            } catch (Exception ignore) {
+                // ignore
+            }
+
+            if (info.isValid()) {
+                return info;
+            } else {
+                return null;
+            }
+        }
+
+        return null;
+
     }
 
     /**

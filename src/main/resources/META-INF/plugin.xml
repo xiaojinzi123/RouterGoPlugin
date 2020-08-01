@@ -11,6 +11,12 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.8</b>
+    <ul>
+        <li>
+            fix hostAndPath method route fail(Java Code, Kotlin is ok)
+        </li>
+    </ul>
     <b>v1.2.7</b>
     <ul>
         <li>

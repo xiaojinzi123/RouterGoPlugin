@@ -44,7 +44,7 @@ runIde {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 
 group "com.xiaojinzi.routergo"
-version "1.2.7"
+version "1.2.8"
 
 publishPlugin {
     token "perm:Y3hqMHhpYW9qaW56aQ==.eGlhb2ppbnpp.0pWMo0igtSrkqvxzPl4MlXm6HO2c0i"

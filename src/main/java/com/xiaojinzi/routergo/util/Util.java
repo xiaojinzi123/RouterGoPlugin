@@ -427,6 +427,23 @@ public class Util {
         return getRouterInfoFromPsiReferenceExpression(psiReferenceExpression) == null ? false : true;
     }
 
+    public static boolean isHostMethodReferenceExpression(@NotNull PsiReferenceExpression psiReferenceExpression) {
+        Project project = psiReferenceExpression.getProject();
+        PsiElement psiElement = psiReferenceExpression.resolve();
+        if (psiElement instanceof PsiMethod) {
+            PsiMethod targetPsiMethod = (PsiMethod) psiElement;
+            PsiMethod routerRequestHostMethod = Util.getRouterRequestHostMethod(project);
+            PsiMethod routerHostMethod = Util.getRouterHostMethod(project);
+            PsiMethod rxRouterHostMethod = Util.getRxRouterHostMethod(project);
+            boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
+                    targetPsiMethod.equals(routerHostMethod) ||
+                    targetPsiMethod.equals(rxRouterHostMethod);
+            return isHostMethod;
+        }else {
+            return false;
+        }
+    }
+
     /**
      * .....host("order") 中拿到 "order" 字符串 也支持 hostAndPath 方法
      *
@@ -438,10 +455,12 @@ public class Util {
         RouterInfo info = new RouterInfo();
         // 尝试获取 host() 和 path() 方法写的参数
         try {
-            PsiElement psiHostElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
-            PsiElement psiPathElement = psiReferenceExpression.getParent().getParent().getParent().getChildren()[1].getChildren()[1];
-            info.host = getStringValue(psiHostElement);
-            info.path = getStringValue(psiPathElement);
+            if (isHostMethodReferenceExpression(psiReferenceExpression)) {
+                PsiElement psiHostElement = psiReferenceExpression.getParent().getChildren()[1].getChildren()[1];
+                PsiElement psiPathElement = psiReferenceExpression.getParent().getParent().getParent().getChildren()[1].getChildren()[1];
+                info.host = getStringValue(psiHostElement);
+                info.path = getStringValue(psiPathElement);
+            }
         } catch (Exception ignore) {
             // ignore
         }

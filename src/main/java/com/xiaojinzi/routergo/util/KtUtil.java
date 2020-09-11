@@ -26,8 +26,20 @@ public class KtUtil {
      */
     @Nullable
     public static String getStringValue(@NotNull PsiElement psiElement) {
-        if (psiElement instanceof KtDotQualifiedExpression) {
-            try {
+        try {
+            if(psiElement instanceof PsiReferenceExpression) {
+                PsiReferenceExpression psiReferenceExpression = (PsiReferenceExpression) psiElement;
+                return getStringValue(psiReferenceExpression.resolve());
+            } else if (psiElement instanceof PsiBinaryExpression) {
+                PsiBinaryExpression psiBinaryExpression = (PsiBinaryExpression) psiElement;
+                return getStringValue(psiBinaryExpression.getLOperand()) + getStringValue(psiBinaryExpression.getROperand());
+            } else if (psiElement instanceof PsiLiteralExpression) {
+                PsiLiteralExpression psiLiteralExpression = (PsiLiteralExpression) psiElement;
+                return (String) psiLiteralExpression.getValue();
+            } else if (psiElement instanceof PsiField) {
+                PsiField psiField = (PsiField) psiElement;
+                return getStringValue(psiField.getInitializer());
+            } else if (psiElement instanceof KtDotQualifiedExpression) {
                 KtDotQualifiedExpression ktDotQualifiedExpression = (KtDotQualifiedExpression) psiElement;
                 PsiReference[] psiReferences = ktDotQualifiedExpression.getSelectorExpression().getReferences();
                 PsiReference targetPsiReference = null;
@@ -38,22 +50,14 @@ public class KtUtil {
                     }
                 }
                 if (targetPsiReference != null) {
-                    PsiField psiField = (PsiField) targetPsiReference.resolve();
-                    PsiExpression psiFieldInitializer = psiField.getInitializer();
-                    if (psiFieldInitializer instanceof PsiLiteralExpression) {
-                        return (String) ((PsiLiteralExpression) psiFieldInitializer).getValue();
-                    }
+                    return getStringValue(targetPsiReference.resolve());
                 }
-            } catch (Exception Ignore) {
-                // ignore
-            }
-        } else if (psiElement instanceof KtStringTemplateExpression) {
-            try {
+            } else if (psiElement instanceof KtStringTemplateExpression) {
                 KtStringTemplateExpression ktStringTemplateExpression = (KtStringTemplateExpression) psiElement;
                 return ktStringTemplateExpression.getEntries()[0].getText();
-            } catch (Exception Ignore) {
-                // ignore
             }
+        } catch (Exception Ignore) {
+            // ignore
         }
         return null;
     }
@@ -193,7 +197,7 @@ public class KtUtil {
             // kotlin 的 value 不会获取的出来
             if (valueArgument.getArgumentName() == null) {
                 annoAttribute = Constants.InterceptorAnnoValueName;
-            }else {
+            } else {
                 annoAttribute = valueArgument.getArgumentName().getAsName().asString();
             }
             if (Constants.InterceptorAnnoValueName.equals(annoAttribute)) { // 如果是 value

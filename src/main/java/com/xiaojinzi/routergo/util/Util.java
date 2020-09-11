@@ -1,6 +1,5 @@
 package com.xiaojinzi.routergo.util;
 
-import com.intellij.lang.jvm.JvmMethod;
 import com.intellij.lang.jvm.annotation.JvmAnnotationArrayValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
@@ -442,6 +441,23 @@ public class Util {
 
     public static boolean isRouteAble(@NotNull PsiReferenceExpression psiReferenceExpression) {
         return getRouterInfoFromPsiReferenceExpression(psiReferenceExpression) == null ? false : true;
+    }
+
+    public static boolean isHostMethodReferenceExpression(@NotNull PsiReferenceExpression psiReferenceExpression) {
+        Project project = psiReferenceExpression.getProject();
+        PsiElement psiElement = psiReferenceExpression.resolve();
+        if (psiElement instanceof PsiMethod) {
+            PsiMethod targetPsiMethod = (PsiMethod) psiElement;
+            PsiMethod routerRequestHostMethod = Util.getRouterRequestHostMethod(project);
+            PsiMethod routerHostMethod = Util.getRouterHostMethod(project);
+            PsiMethod rxRouterHostMethod = Util.getRxRouterHostMethod(project);
+            boolean isHostMethod = targetPsiMethod.equals(routerRequestHostMethod) ||
+                    targetPsiMethod.equals(routerHostMethod) ||
+                    targetPsiMethod.equals(rxRouterHostMethod);
+            return isHostMethod;
+        }else {
+            return false;
+        }
     }
 
     /**

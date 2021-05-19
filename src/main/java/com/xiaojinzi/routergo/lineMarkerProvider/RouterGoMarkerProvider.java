@@ -52,8 +52,9 @@ public class RouterGoMarkerProvider extends BaseRouterGoMarkerProvider {
         return null;
     }
 
-
     @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+    public void collectSlowLineMarkers(@NotNull List<? extends PsiElement> elements, @NotNull Collection<? super LineMarkerInfo<?>> result) {
+        super.collectSlowLineMarkers(elements, result);
     }
+
 }

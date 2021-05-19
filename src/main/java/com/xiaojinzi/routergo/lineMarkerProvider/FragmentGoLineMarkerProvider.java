@@ -62,7 +62,4 @@ public class FragmentGoLineMarkerProvider implements LineMarkerProvider {
         return null;
     }
 
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-    }
 }

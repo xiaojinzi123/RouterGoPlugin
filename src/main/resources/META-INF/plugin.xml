@@ -11,6 +11,12 @@
     </description>
 
     <change-notes><![CDATA[
+    <b>v1.2.10</b>
+    <ul>
+        <li>
+            1. support Android 4.2.1
+        </li>
+    </ul>
     <b>v1.2.9</b>
     <ul>
         <li>

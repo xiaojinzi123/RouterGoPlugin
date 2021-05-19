@@ -32,8 +32,4 @@ public class InterceptorGoInRouterAnnoLineMarkerProvider extends BaseInterceptor
         return (b1 || b2) && Util.isStringExpression(element);
     }
 
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-    }
-
 }

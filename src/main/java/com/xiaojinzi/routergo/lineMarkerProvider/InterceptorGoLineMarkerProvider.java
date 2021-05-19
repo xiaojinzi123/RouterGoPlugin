@@ -56,7 +56,4 @@ public class InterceptorGoLineMarkerProvider extends BaseInterceptorGoLineMarker
         return false;
     }
 
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-    }
 }

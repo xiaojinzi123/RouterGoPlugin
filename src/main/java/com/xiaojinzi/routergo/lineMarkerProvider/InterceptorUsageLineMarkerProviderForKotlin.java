@@ -41,8 +41,4 @@ public class InterceptorUsageLineMarkerProviderForKotlin implements LineMarkerPr
         return null;
     }
 
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-    }
-
 }

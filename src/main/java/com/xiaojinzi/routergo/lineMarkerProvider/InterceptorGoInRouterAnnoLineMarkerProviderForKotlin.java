@@ -29,8 +29,4 @@ public class InterceptorGoInRouterAnnoLineMarkerProviderForKotlin extends BaseIn
         return b && KtUtil.isStringExpression(element);
     }
 
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-    }
-
 }

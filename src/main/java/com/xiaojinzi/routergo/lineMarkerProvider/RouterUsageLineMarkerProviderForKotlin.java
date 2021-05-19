@@ -44,8 +44,4 @@ public class RouterUsageLineMarkerProviderForKotlin implements LineMarkerProvide
         return null;
     }
 
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
-    }
-
 }
